@@ -1,0 +1,27 @@
+extends ../../layouts/default.pug
+
+
+block main
+  .product-card.fade-in
+    .card-header
+      h1.card-title #{product.title}
+    .card-body
+      if product.thumbnail
+        .image-wrapper
+          img.thumbnail(src=product.thumbnail alt="Air Purifier")
+      .info-grid
+        .info-item Giá: 
+          span.price #{product.price}$
+        .info-item Giảm giá: 
+          span.discount -#{product.discountPercentage}%
+        .info-item Giá mới: 
+          span.price #{product.newPrice}$
+        .info-item Còn lại: 
+          span.stock #{product.stock}
+      if product.description
+        p.description Mô tả: #{product.description}
+      a(
+            class="btn btn-warning btn-sm ml-1"
+            style="width:auto"
+            href=`${prefixAdmin}/products/edit/${product.id}`
+            ) Chỉnh sửa sản phẩm

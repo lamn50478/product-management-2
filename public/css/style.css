@@ -1,0 +1,199 @@
+h1{
+    color:black;
+    border:1px solid black;
+    margin:20px 5px;
+    padding:10px;
+}
+
+ul{
+    list-style-type:none;
+}
+a{
+    color:black;
+}
+ul li{
+    margin-left:10px;
+    color:black;
+    padding:10px;
+}
+.footer{
+    color:#fff;
+    background-color: black;
+    padding:10px;
+    margin-top:15px;
+    font-size:30px;
+    text-align:center;
+}
+.header{
+    padding:10px;
+    border:1px solid #ddd;
+}
+.header .inner-menu > ul{
+    flex-wrap:wrap;
+    padding:0;
+    margin:0;
+    justify-content:center;
+    flex-direction: flex-end;
+    display:flex;
+
+}  
+
+/* code san pham */
+.product-item .inner-content .inner-title {
+    font-size:20px;
+    color: black;
+    padding: 5px;
+}
+.container {
+    border-radius: 5px;
+    border:1px solid black;
+}
+.container .col-12 .box-head  .inner-title{
+    color:green;
+}
+.product-item{
+    padding:10px;
+    background-color: #fff;
+    width:200px;
+    height:auto;
+    border-radius: 5px;
+    border:1px solid #a59d9d;
+
+}
+.product-item .inner-image{
+   background-color: black;
+    /* width:auto;
+    height:auto; */
+    text-align: center;
+    aspect-ratio: 19/7;
+    
+   
+}
+.product-item .inner-image img{
+    width:100%;
+    height:120px;
+    object-fit: cover;
+}
+.product-item .inner-content .inner-title{
+    font-size:30px;
+    color:black;
+    padding:5px;
+}
+.product-item .inner-content .inner-price-new{
+    font-size:18px;
+    color:green;
+    
+}
+.product-item .inner-content .inner-price-old{
+    font-size:18px;
+    color:red;
+    
+    text-decoration: line-through;
+}.product-item .inner-content .inner-discount{
+    font-size:18px;
+    color:#fff;
+    padding:5px;
+    background-color: red;
+    width:80px;
+    border-radius: 5px;
+}
+/* detail */
+
+.product-card {
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+  max-width: 600px;
+  margin: 40px auto;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.4s ease;
+}
+
+.card-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.image-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.thumbnail {
+  width: 220px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease;
+}
+.thumbnail:hover {
+  transform: scale(1.08);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.info-item {
+  font-size: 18px;
+  color: #34495e;
+}
+
+.price {
+  color: #27ae60;
+  font-weight: bold;
+}
+.discount {
+  color: #e67e22;
+  font-weight: bold;
+}
+.stock {
+  color: #2980b9;
+  font-weight: bold;
+}
+
+.status-row {
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.badge-success, .badge-danger {
+  margin-left: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+}
+.badge-success {
+  background-color: #2ecc71;
+}
+.badge-danger {
+  background-color: #e74c3c;
+}
+
+.description {
+  font-size: 16px;
+  color: #4c5050;
+  text-align: center;
+  margin-top: 12px;
+}
+
+.fade-in {
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* end detail */

@@ -1,0 +1,119 @@
+extends ../../layouts/default.pug 
+include ../../mixins/fillter-status.pug
+include ../../mixins/search.pug
+include ../../mixins/pagination.pug 
+include ../../mixins/form-change-multi.pug 
+include ../../mixins/alert.pug 
+
+
+block main 
+  +alert-success(5000) 
+  +alert-error(5000) 
+  h1 Trang danh sach san pham ne
+ 
+  .card-header Bo loc va tim kiem 
+    .card-body 
+      .row 
+        .col-6 
+          +fillterStatus(fillterStatus)
+        .col-6 
+          +search(keyword)
+
+  .card.mb-3 
+    .card-header Danh sach
+    .card-body 
+      .row
+        .col-8
+          +form-change-multi(`${prefixAdmin}/products/change-multi?_method=PATCH`)
+        .col-4 
+          a(
+            href=`${prefixAdmin}/products/create`
+            class="btn btn-outline-success"
+          ) + Thêm mới 
+      table(
+        class="table table-hover table-sm "
+        checkbox-multi
+      )
+        
+        thead 
+          tr 
+            th 
+              input(type="checkbox" name="checkall")
+            th STT 
+            th Image 
+            th Title 
+            th Price 
+             th Position
+            th Status 
+            th Action 
+
+        tbody 
+          each item, index in products
+            tr 
+              td 
+                input(type="checkbox" name="id" value=item.id)
+              td #{index + 1}
+              td 
+                .inner-image 
+                  img(
+                    src=item.thumbnail
+                    alt=item.title
+                    style="width: 100px; height:auto"
+                  )
+              td #{item.title}
+              td #{item.price}$
+              td 
+                input(
+                  type="number",
+                  style="width:60px",
+                  min=1,
+                  value=item.position,
+                  name='position'
+
+                )
+              td 
+                if item.status == "active"
+                  a(
+                    data-status=item.status
+                    data-id=item._id
+                    button-change-status
+                    href=`javascript:;`
+                    class="badge badge-success") Hoat dong 
+                else 
+                  a(
+                    data-status=item.status
+                    data-id=item._id
+                    button-change-status
+                    href=`javascript:;`
+                    class="badge badge-danger") Khong Hoat dong 
+              td 
+                a(
+                    class="btn btn-secondary btn-sm"
+                    href=`${prefixAdmin}/products/detail/${item.id}`
+                    ) Chi tiết 
+                a(
+                  class="btn btn-warning btn-sm ml-1"
+                  href=`${prefixAdmin}/products/edit/${item.id}`
+                  ) Sửa
+                button(
+                  class="btn btn-danger btn-sm ml-1"
+                  button-delete 
+                  data-id=item.id
+                  ) Xóa
+
+  +pagination(pagination)
+  form(
+    action=""
+    data-path=`${prefixAdmin}/products/change-status`
+    id="form-change-status"
+    method="POST") 
+
+  form(
+    action=""
+    data-path=`${prefixAdmin}/products/delete-product`
+    id="form-delete-product"
+    method="POST") 
+
+
+
+  <script src="/admin/js/product.js"></script>

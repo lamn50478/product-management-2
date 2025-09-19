@@ -1,0 +1,128 @@
+extends ../../layouts/default.pug 
+include ../../mixins/alert.pug
+block main 
+    +alert-success(5000) 
+    +alert-error(5000) 
+    h1(class="mb-4") Thêm mới sản phẩm 
+    form(
+        action=`${prefixAdmin}/products/create`
+        id="form-create-product"
+        method="POST" 
+        enctype="multipart/form-data"
+    )
+        div(class="form-group")
+            label(for="title") Tiêu đề
+            input(
+                name="title"
+                id="title"
+                type="text"
+                class="form-control"
+               
+            ) 
+        div(class="form-group")
+            label(for="desc") Mô tả
+            textarea(
+                name="description"
+                id="desc"
+                type="text"
+                class="form-control"
+                
+            ) 
+        div(class="form-group")
+            label(for="price") Giá 
+            input(
+                name="price"
+                id="price"
+                type="number"
+                class="form-control"
+                value=0
+                min=0
+                
+            ) 
+        div(class="form-group")
+            label(for="discount") % giảm giá 
+            input(
+                name="discountPercentage"
+                id="discount"
+                type="number"
+                class="form-control"
+                value=0
+                min=0
+                
+            ) 
+
+        div(class="form-group")
+            label(for="stock") Số lượng
+            input(
+                name="stock"
+                id="stock"
+                type="number"
+                class="form-control"
+                value=0
+                min=0
+                
+            ) 
+
+        div(
+            class="form-group"
+            upload-image
+            )
+            label(for="thumbnail") Ảnh
+            input(
+                name="thumbnail"
+                id="thumbnail"
+                type="file"
+                class="form-control-file"
+                accept="image/*"
+                upload-image-input
+            ) 
+            div(class="image-container")
+                img(
+                    upload-image-preview
+                ) 
+                span(class="close-image" style="display:none") x
+
+        div(class="form-group")
+            label(for="position") Vị trí
+            input(
+                name="position"
+                id="position"
+                type="number"
+                class="form-control"
+                placeholder="Tự động tăng"
+                min=0
+            ) 
+        div(class="form-group form-check form-check-inline")
+            input(
+                type="radio"
+                class="form-check-input"
+                id="statusActive"
+                value="active"
+                name="status"
+                checked
+            ) 
+            label(
+                for="statusActive"
+                class="form-check-label"
+            ) Hoạt động 
+
+        div(class="form-group form-check form-check-inline")
+            input(
+                type="radio"
+                class="form-check-input"
+                id="statusInactive"
+                value="inactive"
+                name="status"
+            ) 
+            label(
+                for="statusInactive"
+                class="form-check-label"
+            )  Dừng Hoạt động 
+        
+        div(class="form-group")
+            button(
+                type="submit"
+                class=" btn btn-outline-primary"
+            ) Thêm mới
+
+        script(src="/admin/js/product.js")

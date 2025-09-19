@@ -1,0 +1,41 @@
+mixin pagination(pagination)
+  nav
+   ul(class="pagination")
+    li(class="page-item")
+     if(pagination.currentPage > 1)
+      button(
+        class="page-link",
+        button-pagination=pagination.currentPage-1
+      ) Trang truoc 
+     
+     
+
+    - for (var i = 1;i <= pagination.totalPage; i++)
+      li(class=`page-item ${pagination.currentPage == i ? "active":""}`)
+       button(
+        class="page-link"
+        button-pagination=i
+       ) #{i}
+      
+    li(class=page-item)
+     if(pagination.currentPage < pagination.totalPage)
+      button(
+         class="page-link",
+         button-pagination=pagination.currentPage+1
+       ) Trang ke tiep
+
+  //- nav(aria-label='Page navigation example')
+  //- ul.pagination
+  //-   li.page-item
+  //-     a.page-link(href='#') Previous
+  //-   li.page-item
+  //-     a.page-link(href='#') 1
+  //-   li.page-item
+  //-     a.page-link(href='#') 2
+  //-   li.page-item
+  //-     a.page-link(href='#') 3
+  //-   li.page-item
+  //-     a.page-link(href='#') Next
+
+      
+    

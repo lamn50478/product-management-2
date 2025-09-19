@@ -1,0 +1,31 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+  .product-card.fade-in
+    .card-header
+      h1.card-title #{product.title}
+    .card-body
+      if product.thumbnail
+        .image-wrapper
+          img.thumbnail(src=product.thumbnail alt="Air Purifier")
+      .info-grid
+        .info-item Giá: 
+          span.price #{product.price}$
+        .info-item Giảm giá: 
+          span.discount -#{product.discountPercentage}%
+        .info-item Còn lại: 
+          span.stock #{product.stock}
+      .status-row
+        span Trạng thái:
+        if product.status === "active"
+          span.badge-success Hoạt động
+        else
+          span.badge-danger Dừng hoạt động
+      if product.description
+        p.description Mô tả: #{product.description}
+      a(
+            class="btn btn-warning btn-sm ml-1"
+            style="width:auto"
+            href=`${prefixAdmin}/products/edit/${product.id}`
+            ) Chỉnh sửa sản phẩm
