@@ -45,10 +45,10 @@ routerAdmin(app)
 
 
 
-// app.listen(port,()=>{
-//     console.log(`example listening on ${port}`);
-// })
-module.exports = app;
+app.listen(port,()=>{
+    console.log(`example listening on ${port}`);
+})
+
 // 
 
 
