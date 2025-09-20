@@ -1,6 +1,8 @@
 const express=require('express')
 const app=express()
 var flash=require('express-flash')
+const path = require('path');
+
 
 const systemConfig=require('./config/system.js')
 
@@ -14,7 +16,7 @@ const expressSession=require("express-session");
 const database=require("./config/database");
 //env set
 require('dotenv').config();
-const port=process.env.PORT ||3000;
+const port=process.env.PORT || 3000;
 //end set env
 
 //flash
@@ -45,9 +47,9 @@ routerAdmin(app)
 
 
 
-// app.listen(port,()=>{
-//     console.log(`example listening on ${port}`);
-// })
+app.listen(port,()=>{
+    console.log(`example listening on ${port}`);
+})
 module.exports=app
 // 
 
