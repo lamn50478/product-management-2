@@ -14,7 +14,7 @@ const expressSession=require("express-session");
 const database=require("./config/database");
 //env set
 require('dotenv').config();
-const port=process.env.PORT;
+const port=process.env.PORT ||3000;
 //end set env
 
 //flash
