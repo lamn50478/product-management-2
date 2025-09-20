@@ -33,7 +33,7 @@ console.log(filterStatus);
    const countProducts=await Product.countDocuments();
    let objectPagination=paginationHelpers(
       {
-         currentPage:"",
+         currentPage:""|| 1,
          limitPages:"4"
       },
       countProducts,
@@ -145,9 +145,9 @@ module.exports.createPost= async (req,res)=>{
    }else{
       req.body.position=parseInt( req.body.position);
    }
-   if(req.file){
-          req.body.thumbnail=(`/uploads/${req.file.filename}`);
-   }
+   // if(req.file){
+   //        req.body.thumbnail=(`/uploads/${req.file.filename}`);
+   // }
     
 
 
@@ -186,9 +186,10 @@ module.exports.editPost= async (req,res)=>{
    req.body.stock=parseInt( req.body.stock);
    req.body.position=parseInt( req.body.position);
  
-   if(req.file){
-          req.body.thumbnail=(`/uploads/${req.file.filename}`);
-   }
+   // if(req.file){
+   //       //  req.body.thumbnail=(`/uploads/${req.file.filename}`);
+   // }
+   console.log(req.body)
     try {
        await Product.updateOne({_id:id},req.body);
    req.flash("success","Chỉnh sửa thành công");
