@@ -41,8 +41,20 @@ console.log(filterStatus);
    );
 //end pagination 
 
+//sort
+let sort={};
+
+if(req.query.sortKey && req.query.sortValue){
+    sort[req.query.sortKey]=req.query.sortValue;
+}else{
+   sort.position="desc";
+}
+
+//end sort
+
+
    const products=await Product.find(find)
-   .sort({position : "desc"})
+   .sort(sort)
    .limit(objectPagination.limitPages)
    .skip(objectPagination.skip);
    
@@ -145,9 +157,7 @@ module.exports.createPost= async (req,res)=>{
    }else{
       req.body.position=parseInt( req.body.position);
    }
-   // if(req.file){
-   //        req.body.thumbnail=(`/uploads/${req.file.filename}`);
-   // }
+
     
 
 
@@ -181,10 +191,11 @@ try{
 module.exports.editPost= async (req,res)=>{
    const id=req.params.id;
    
-   req.body.price=parseFloat(req.body.price);
-   req.body.discountPercentage=parseFloat( req.body.discountPercentage);
-   req.body.stock=parseInt( req.body.stock);
-   req.body.position=parseInt( req.body.position);
+   req.body.price=parseFloat(req.body.price)|| 0;
+   req.body.discountPercentage=parseFloat( req.body.discountPercentage)|| 0;
+   req.body.stock=parseInt( req.body.stock)|| 0;
+   req.body.position = parseInt(req.body.position) || 0;
+
  
    // if(req.file){
    //       //  req.body.thumbnail=(`/uploads/${req.file.filename}`);

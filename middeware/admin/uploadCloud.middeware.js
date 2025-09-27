@@ -13,6 +13,8 @@ console.log("Cloudinary config:", process.env.CLOUD_NAME, process.env.CLOUD_KEY,
 
 module.exports.upload= (req, res, next)=> {  
     if(req.file){
+        console.log("File nhận được:", req.file);
+
         let streamUpload = (req) => {
             return new Promise((resolve, reject) => {
                 let stream = cloudinary.uploader.upload_stream(
@@ -31,11 +33,11 @@ module.exports.upload= (req, res, next)=> {
 
     async function upload(req) {
         let result = await streamUpload(req);
-        console.log(result.url);
         req.body[req.file.fieldname]=result.url;
+        
         next();
     }
-    upload(req);
+     upload(req);
         }
     else{
          next();

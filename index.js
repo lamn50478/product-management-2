@@ -25,6 +25,10 @@ app.use(expressSession({cookie : {maxAge:60000}}));
 app.use(flash());
 //end flash
 
+//tiny mce
+app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
+//end tiny mce
+
 //body-parse
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(express.json());

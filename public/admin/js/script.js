@@ -100,3 +100,38 @@ closeImage.addEventListener("click",()=>{
 })
 }
 //end image-preview-uploads
+
+//sort
+const sort=document.querySelector("[sort]");
+if(sort){
+    let url=new URL(window.location.href);
+    const sortSelect=sort.querySelector("[sort-select]");
+    const sortClear=sort.querySelector("[sort-clear]");
+    sortSelect.addEventListener("change",(e)=>{
+        let value=e.target.value;
+        const [sortKey,sortValue]=value.split("-");
+        // console.log(sortKey);
+        // console.log(sortValue);
+
+        url.searchParams.set("sortKey",sortKey);
+        url.searchParams.set("sortValue",sortValue);
+        window.location.href=url.href;
+    })
+//Xoa di cac key va value
+    sortClear.addEventListener("click",()=>{
+    url.searchParams.delete("sortKey");
+    url.searchParams.delete("sortValue");
+    window.location.href=url.href;
+})
+//Thiet lap mac dinh cho cai user da chon
+const sortKey=url.searchParams.get("sortKey");
+const sortValue=url.searchParams.get("sortValue");
+if(sortKey && sortValue){
+    const stringSort=`${sortKey}-${sortValue}`;
+    const sortSelected=sortSelect.querySelector(`option[value=${sortString}]`);
+    sortSelected.selected=true;
+    
+}
+}
+//end sort
+
