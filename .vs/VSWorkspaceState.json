@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\config",
+    "\\controller",
+    "\\controller\\admin",
+    "\\public",
+    "\\routers\\admin",
+    "\\views\\admin"
+  ],
+  "SelectedNode": "\\views",
+  "PreviewInSolutionExplorer": false
+}

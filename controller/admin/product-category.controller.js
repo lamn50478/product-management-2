@@ -17,9 +17,14 @@ module.exports.index= async (req,res)=>{
 
     
  
-   const records=await productCategory.find(find)
-   const newRecords=createTreeHelper.tree(records);
-   
+  const records = await productCategory.find(find).lean();
+const plainRecords = records.map(r => {
+  // nếu cần thêm trường index hoặc id string
+  r.id = r._id ? String(r._id) : r.id;
+  return r;
+});
+const newRecords = createTreeHelper.tree(plainRecords);
+   // console.log(newRecords);
    res.render('admin/pages/products-category/index.pug',{
     pageTitle:"TRANG DANH MỤC SẢN PHẨM",
     records:newRecords

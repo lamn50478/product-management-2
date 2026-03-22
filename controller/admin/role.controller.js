@@ -61,3 +61,32 @@ module.exports.editPost=async (req,res)=>{
        req.flash("error","Cập nhật nhóm quyền thất bại!")
     }
 }
+
+//[GET] /admin/roles/permissions 
+module.exports.permissions=async (req,res)=>{
+     var find={
+        deleted:false
+     };
+     const records=await Role.find(find);
+      res.render("admin/pages/role/permissions.pug",{
+        pageTitle:"Phân quyền",
+        records:records
+   })
+
+}
+
+//[Patch] /admin/roles/permissions 
+module.exports.permissionsPatch=async (req,res)=>{
+   try{
+   const Permissions=JSON.parse(req.body.permissions);//chuyen du lieu dang json do fe gui len thanh dang mang de xu ly
+   console.log(Permissions);
+      for (const item of Permissions){
+      await Role.updateOne({_id:item.id},{permission:item.Permission});
+    }
+    req.flash("success","Cập nhật quyền thành công!");
+    res.redirect(`${systemConfig.prefixAdmin}/role/permissions`);
+    }
+    catch{
+         req.flash("error","Cập nhật quyền thất bại");
+    }
+}

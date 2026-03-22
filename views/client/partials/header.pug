@@ -1,18 +1,121 @@
-header.header  
- .row.align-items-center
-  .col-3 
-   .inner-logo 
-    a(href="/")
-     img(src="/img/logo.svg" alt="Anh logo")
-  .col-9 
-   .inner-menu
-    ul 
-     li 
-      a(href="/") Trang chu
-     li 
-      a(href="/products") Trang danh sach san pham   
-     li 
-      a(href="/admin/dashboard") Trang admin 
-     li 
-      a(href="/admin/products") Trang quan ly san pham admin
-   
+include ../layouts/mixins/sub-menu.pug
+
+header.site-header(role="banner" aria-label="Header chính")
+  .header-inner
+    a.logo(href="/" aria-label="Trang chủ")
+      .logo-icon
+        svg(width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round")
+          circle(cx="12" cy="12" r="3")
+          path(d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4")
+      .logo-text
+        span.logo-name SpeakUp
+        span.logo-tagline English Podcast
+
+    nav.main-nav(aria-label="Menu chính")
+      ul
+        li: a(href="/") Trang chủ
+        li: a(href="/products") Episodes
+        li.has-sub
+          - const pathProduct = "/products"
+          a(href="/products" aria-haspopup="true" aria-expanded="false")
+            | Danh sách
+            svg.chevron(width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round")
+              path(d="M6 9l6 6 6-6")
+          +sub-menu(layoutProductsCategory, pathProduct)
+        li: a(href="/admin/dashboard") Admin
+
+    .header-actions
+      button#searchToggle.search-btn(type="button" aria-label="Tìm kiếm")
+        svg(width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+          circle(cx="11" cy="11" r="8")
+          line(x1="21" y1="21" x2="16.65" y2="16.65")
+        span Tìm kiếm
+      a.btn-listen(href="/products")
+        svg(width="14" height="14" viewBox="0 0 24 24" fill="currentColor")
+          polygon(points="5 3 19 12 5 21 5 3")
+        | Nghe ngay
+
+    button.menu-toggle(aria-label="Mở menu" aria-expanded="false")
+      span.bar
+      span.bar
+      span.bar
+
+//- ── Search Overlay (inline style + script để đảm bảo luôn render) ──
+div#searchOverlay(style="position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding-top:80px;opacity:0;pointer-events:none;transition:opacity 0.22s ease;" aria-hidden="true")
+
+  div#searchBackdrop(style="position:absolute;inset:0;background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);")
+
+  div(style="position:relative;z-index:1;width:100%;max-width:580px;margin:0 16px;background:#fff;border-radius:18px;padding:28px;box-shadow:0 24px 64px rgba(15,23,42,0.22);transform:translateY(-10px);transition:transform 0.22s ease;" id="searchBox")
+
+    button#searchClose(
+      type="button"
+      aria-label="Đóng"
+      style="position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:#F1F5F9;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;"
+    )
+      svg(width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5" stroke-linecap="round")
+        line(x1="18" y1="6" x2="6" y2="18")
+        line(x1="6" y1="6" x2="18" y2="18")
+
+    p(style="font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#94A3B8;margin-bottom:12px;") Tìm kiếm podcast
+
+    //- Form submit thẳng đến /products?keyword=...
+    form(action="/products" method="GET")
+      div(style="display:flex;align-items:center;gap:10px;border:1.5px solid #E2E8F0;border-radius:12px;padding:12px 14px;")
+        svg(width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round")
+          circle(cx="11" cy="11" r="8")
+          line(x1="21" y1="21" x2="16.65" y2="16.65")
+        input#searchInput(
+          type="text"
+          name="keyword"
+          placeholder="Nhập tên podcast, chủ đề, cấp độ..."
+          autocomplete="off"
+          style="flex:1;border:none;outline:none;font-size:15px;font-family:inherit;color:#0F172A;background:transparent;"
+        )
+
+      div(style="display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap;font-size:12px;color:#94A3B8;")
+        span Gợi ý:
+        each hint in ['A2', 'B1', 'Economics', 'Culture', 'Grammar']
+          a(
+            href=`/products?keyword=${hint}`
+            style="padding:4px 12px;border-radius:20px;background:#F1F5F9;color:#475569;text-decoration:none;font-weight:600;font-size:12px;"
+          ) #{hint}
+
+      button(
+        type="submit"
+        style="display:flex;align-items:center;justify-content:center;width:100%;margin-top:16px;padding:12px;border-radius:10px;background:#0F172A;color:#fff;border:none;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;"
+      ) Tìm kiếm
+
+//- Script mở/đóng overlay
+script.
+  (function () {
+    var overlay  = document.getElementById('searchOverlay');
+    var searchBox = document.getElementById('searchBox');
+    var toggle   = document.getElementById('searchToggle');
+    var backdrop = document.getElementById('searchBackdrop');
+    var closeBtn = document.getElementById('searchClose');
+    var input    = document.getElementById('searchInput');
+
+    if (!overlay || !toggle) return;
+
+    function openSearch() {
+      overlay.style.opacity = '1';
+      overlay.style.pointerEvents = 'all';
+      overlay.setAttribute('aria-hidden', 'false');
+      if (searchBox) searchBox.style.transform = 'translateY(0)';
+      setTimeout(function () { if (input) input.focus(); }, 80);
+    }
+
+    function closeSearch() {
+      overlay.style.opacity = '0';
+      overlay.style.pointerEvents = 'none';
+      overlay.setAttribute('aria-hidden', 'true');
+      if (searchBox) searchBox.style.transform = 'translateY(-10px)';
+    }
+
+    toggle.addEventListener('click', openSearch);
+    backdrop && backdrop.addEventListener('click', closeSearch);
+    closeBtn && closeBtn.addEventListener('click', closeSearch);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeSearch();
+    });
+  })();

@@ -1,3 +1,177 @@
-extends ../../layouts/default.pug 
-block main 
- h1 Trang tong quan nek
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+  style.
+    :root{
+      --bg:#0b1220;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#06b6d4;
+      --accent-2:#3b82f6;
+      --soft:#f8fafc;
+      --radius:12px;
+      --maxw:1200px;
+      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    .admin-wrap{max-width:var(--maxw); margin:28px auto; padding:20px;}
+    .layout{display:grid; grid-template-columns:260px 1fr; gap:20px; align-items:start;}
+    .sidebar{background:var(--card); border-radius:var(--radius); padding:18px; border:1px solid #eef2f7; height:calc(100vh - 80px); position:sticky; top:20px; box-shadow:0 8px 24px rgba(15,23,42,0.04);}
+    .brand{font-weight:800; color:var(--bg); font-size:1.1rem; margin-bottom:12px;}
+    .nav{display:flex; flex-direction:column; gap:8px;}
+    .nav a{display:flex; gap:10px; align-items:center; padding:10px; border-radius:8px; color:var(--muted); text-decoration:none; font-weight:700;}
+    .nav a.active{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#fff;}
+    .content{min-height:80vh;}
+    .topbar{display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:18px;}
+    .search{flex:1; display:flex; gap:8px; align-items:center;}
+    .search input{flex:1; padding:10px 12px; border-radius:10px; border:1px solid #eef2f7;}
+    .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px;}
+    .stat{background:var(--card); padding:14px; border-radius:12px; border:1px solid #eef2f7; display:flex; flex-direction:column; gap:6px;}
+    .stat .num{font-size:1.4rem; font-weight:800; color:var(--bg);}
+    .grid-2{display:grid; grid-template-columns:2fr 1fr; gap:12px;}
+    .card{background:var(--card); border-radius:12px; padding:14px; border:1px solid #eef2f7;}
+    .list-row{display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-bottom:1px dashed #f1f5f9;}
+    .thumb{width:72px; height:72px; border-radius:8px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:flex; align-items:center; justify-content:center; color:#06202a; font-weight:900; font-size:1.05rem;}
+    .meta{flex:1;}
+    .muted{color:var(--muted); font-weight:600;}
+    .small-btn{padding:8px 10px; border-radius:8px; border:1px solid #eef2f7; background:transparent; font-weight:700; color:var(--bg); text-decoration:none;}
+    .activity{max-height:260px; overflow:auto; padding-right:6px;}
+    .user-row{display:flex; gap:12px; align-items:center; padding:8px 0; border-bottom:1px dashed #f1f5f9;}
+    .avatar{width:44px; height:44px; border-radius:8px; background:linear-gradient(135deg,#fde68a,#fca5a5); display:flex; align-items:center; justify-content:center; font-weight:800; color:#06202a;}
+    .chart-wrap{height:220px;}
+    footer.admin-foot{margin-top:18px; color:var(--muted); text-align:center; font-size:0.95rem;}
+    @media (max-width:1000px){ .layout{grid-template-columns:1fr} .sidebar{position:relative; height:auto} .stats{grid-template-columns:repeat(2,1fr)} .grid-2{grid-template-columns:1fr} }
+
+  .admin-wrap
+    +alert-success(4000)
+    +alert-error(4000)
+
+    .layout
+      // Sidebar
+      .sidebar
+        .brand Admin Podcast Hub
+        .muted(style="font-size:0.9rem; margin-bottom:12px") Manage episodes, transcripts, users and analytics
+        .nav
+          a.active(href=`${prefixAdmin}/dashboard`) Dashboard
+          a(href=`${prefixAdmin}/products`) Episodes
+          a(href=`${prefixAdmin}/products/create`) Upload
+          a(href=`${prefixAdmin}/users`) Users
+          a(href=`${prefixAdmin}/settings`) Settings
+          a(href=`${prefixAdmin}/reports`) Reports
+
+        hr(style="margin:12px 0; border:none; border-top:1px solid #f1f5f9;")
+        .muted Quick Actions
+        .nav
+          a(href=`${prefixAdmin}/products/create`) + New Episode
+          a(href=`${prefixAdmin}/products/transcribe`) Transcribe Queue
+          a(href=`${prefixAdmin}/products`) Review Transcripts
+
+      // Main content
+      .content
+        .topbar
+          .search
+            input(type="search" placeholder="Search episodes, transcripts, users..." aria-label="Search")
+            button.small-btn(type="button") Search
+          .right
+            a.small-btn(href=`${prefixAdmin}/profile`) Admin
+            a.small-btn(href=`${prefixAdmin}/logout`) Logout
+
+        // Stats
+        .stats
+          .stat
+            span.muted TOTAL EPISODES
+            span.num 128
+            span.muted 12 new this month
+          .stat
+            span.muted WEEKLY LISTENS
+            span.num 24,560
+            span.muted +8% vs last week
+          .stat
+            span.muted SUBSCRIBERS
+            span.num 8,420
+            span.muted +2% vs last month
+          .stat
+            span.muted STORAGE USED
+            span.num 42.3 GB
+            span.muted of 200 GB
+
+        // Main grid
+        .grid-2
+          // Left column: featured + chart + recent uploads
+          .left
+            .card
+              h3(style="margin:0 0 8px 0") Overview
+              p.muted Manage English audio episodes and transcripts by topic: Economics, Politics, Culture.
+              .chart-wrap
+                canvas#listensChart(width="400" height="220")
+            .card(style="margin-top:12px")
+              h4 Recent Uploads
+              // sample rows (server should render real data)
+              each ep in [{id:128,title:'Presentation Skills',dur:'34:12',topic:'Culture',audio:'/audio/ep128.mp3',transcriptStatus:'ready'},{id:127,title:'Finance Vocabulary',dur:'28:05',topic:'Economics',audio:'/audio/ep127.mp3',transcriptStatus:'pending'}]
+                .list-row
+                  .thumb= ep.title.split(' ').map(w=>w[0]).slice(0,2).join('')
+                  .meta
+                    strong= ep.title
+                    div.muted= ep.dur + ' · ' + ep.topic
+                    if ep.transcriptStatus == 'ready'
+                      span.small-btn(style="margin-top:8px; display:inline-block;") Transcript ready
+                    else
+                      span.small-btn(style="margin-top:8px; display:inline-block;") Transcribing
+                  .actions
+                    audio(controls preload="none" src=ep.audio style="width:220px; margin-left:12px" lang="en")
+                      | Your browser does not support the audio element.
+                    a.small-btn(href=`${prefixAdmin}/products/detail/${ep.id}` style="margin-left:8px") Edit
+
+          // Right column: activity + users
+          .right
+            .card
+              h4 Activity Feed
+              .activity
+                each act in [{time:'2m ago',text:'Uploaded Episode 128 by Minh'},{time:'1h ago',text:'Transcript saved for Episode 125'},{time:'1d ago',text:'User Anna registered'}]
+                  .muted(style="font-size:0.85rem") #{act.time}
+                  p(style="margin:6px 0 12px 0")= act.text
+
+            .card(style="margin-top:12px")
+              h4 Users
+              each u in [{name:'Minh',role:'Editor'},{name:'Anna',role:'Subscriber'},{name:'Tom',role:'Admin'}]
+                .user-row
+                  .avatar= u.name.split(' ').map(w=>w[0]).slice(0,2).join('')
+                  .meta
+                    strong= u.name
+                    div.muted= u.role
+                  a.small-btn(href=`${prefixAdmin}/users`) Manage
+
+        footer.admin-foot
+          | © #{new Date().getFullYear()} Podcast Hub Admin
+
+  // Scripts: Chart.js CDN and init with sample data
+  script(src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js")
+  script.
+    (function(){
+      try {
+        const ctx = document.getElementById('listensChart').getContext('2d');
+        const chart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+            datasets: [{
+              label: 'Listens',
+              data: [3200, 4100, 3800, 4500, 5200, 6100, 5600],
+              borderColor: 'rgba(6,182,212,0.95)',
+              backgroundColor: 'rgba(59,130,246,0.08)',
+              fill: true,
+              tension: 0.3,
+              pointRadius: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { display: false } },
+              y: { grid: { color: '#f1f5f9' }, beginAtZero: true }
+            }
+          }
+        });
+      } catch(e){ console.warn('Chart init failed', e); }1414
+    })();

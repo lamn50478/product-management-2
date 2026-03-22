@@ -1,27 +1,779 @@
 extends ../../layouts/default.pug
 
-
 block main
-  .product-card.fade-in
-    .card-header
-      h1.card-title #{product.title}
-    .card-body
+  style.
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --navy:    #1A0F3C;
+      --blue:    #3B28A0;
+      --violet:  #5B4FCF;
+      --sky:     #06B6D4;
+      --teal:    #00A5A7;
+      --green:   #22C55E;
+      --gold:    #F59E0B;
+      --light:   #F5F4FC;
+      --border:  #E4E0F5;
+      --text:    #18113A;
+      --muted:   #6E6A8A;
+      --card-r:  20px;
+      --trans:   all 0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light); color: var(--text); -webkit-font-smoothing: antialiased; }
+
+    /* ══ HERO ══ */
+    .pd-hero {
+      position: relative; min-height: 420px;
+      display: flex; align-items: flex-end; overflow: hidden;
+    }
+    .pd-hero__bg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      z-index: 0;
+    }
+    .pd-hero__overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(160deg,
+        rgba(26,15,60,0.55) 0%,
+        rgba(59,40,160,0.30) 50%,
+        rgba(26,15,60,0.50) 100%);
+    }
+    .pd-hero__inner {
+      position: relative; z-index: 2;
+      max-width: 1100px; margin: 0 auto; width: 100%;
+      padding: 60px 32px 0;
+      display: grid; grid-template-columns: 260px 1fr;
+      gap: 40px; align-items: flex-end;
+    }
+    .pd-cover {
+      width: 260px; height: 260px; border-radius: 18px;
+      object-fit: cover; box-shadow: 0 32px 64px rgba(0,0,0,0.50);
+      transform: translateY(40px); position: relative; z-index: 3;
+      flex-shrink: 0; transition: var(--trans);
+    }
+    .pd-cover:hover { transform: translateY(36px) scale(1.02); }
+    .pd-cover-placeholder {
+      width: 260px; height: 260px; border-radius: 18px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 32px 64px rgba(0,0,0,0.50);
+      transform: translateY(40px); flex-shrink: 0;
+    }
+    .pd-hero__text { padding-bottom: 28px; }
+    .pd-hero__eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 14px;
+    }
+    .pd-hero__eyebrow span { width: 20px; height: 1px; background: rgba(255,255,255,0.35); display: inline-block; }
+    .pd-hero__tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .h-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 13px; border-radius: 20px;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .h-tag--level { background: var(--gold); color: #1A0F3C; }
+    .h-tag--lang  { background: rgba(6,182,212,0.22); color: var(--sky); border: 1px solid rgba(6,182,212,0.35); }
+    .h-tag--type  { background: rgba(0,165,167,0.18); color: var(--teal); border: 1px solid rgba(0,165,167,0.30); }
+    .h-tag--free  { background: rgba(34,197,94,0.20); color: var(--green); border: 1px solid rgba(34,197,94,0.30); }
+    .pd-hero__title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(26px, 4vw, 44px); font-weight: 700;
+      color: #fff; line-height: 1.18; margin-bottom: 10px; letter-spacing: -0.02em;
+    }
+    .pd-hero__cat { font-size: 14px; color: rgba(255,255,255,0.60); }
+    .pd-hero__cat a { color: var(--sky); text-decoration: none; font-weight: 600; }
+    .pd-hero__cat a:hover { text-decoration: underline; }
+
+    /* ══ BODY ══ */
+    .pd-body { max-width: 1100px; margin: 0 auto; padding: 0 32px 80px; }
+    .pd-grid {
+      display: grid; grid-template-columns: 260px 1fr;
+      gap: 40px; padding-top: 56px;
+    }
+
+    /* Sidebar */
+    .pd-sidebar { display: flex; flex-direction: column; gap: 16px; }
+    .pd-meta-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: var(--card-r); padding: 20px;
+    }
+    .pd-meta-card__title {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
+    }
+    .pd-meta-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+    }
+    .pd-meta-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .pd-meta-row__label { color: var(--muted); font-weight: 500; }
+    .pd-meta-row__val { font-weight: 700; color: var(--navy); text-align: right; }
+    .pd-meta-row__val--level {
+      background: var(--gold); color: var(--navy);
+      padding: 3px 10px; border-radius: 5px;
+      font-size: 12px; font-weight: 800;
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+
+    /* Main */
+    .pd-main { display: flex; flex-direction: column; gap: 24px; }
+    .pd-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: var(--card-r); overflow: hidden;
+    }
+    .pd-card__head {
+      display: flex; align-items: center; gap: 10px;
+      padding: 16px 22px; border-bottom: 1px solid var(--border);
+    }
+    .pd-card__head-icon {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .pd-card__head-icon svg { stroke: #fff; }
+    .pd-card__head h2 { font-size: 14px; font-weight: 700; color: var(--navy); }
+    .pd-card__body { padding: 22px; }
+
+    /* Player */
+    .pd-player {
+      background: linear-gradient(160deg, var(--navy) 0%, #2A1880 100%);
+      border-radius: var(--card-r); overflow: hidden;
+    }
+    .pd-player__top { padding: 22px 22px 0; }
+    .pd-player__ep {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 4px;
+    }
+    .pd-player__title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px; font-weight: 700; color: #fff;
+      margin-bottom: 20px; line-height: 1.3;
+    }
+    /* ── Waveform wrapper (chung cho cả 2 chế độ) ── */
+    .pd-waveform-wrap {
+      position: relative;
+      height: 100px;
+      background: rgba(255,255,255,0.04);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    /* ── Chế độ WAVESURFER (file nhỏ) ── */
+    #pd-waveform {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+    }
+
+    /* ── Chế độ FAKE WAVE (file lớn > 5MB) ── */
+    #pd-fake-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      display: block;
+      z-index: 1;
+    }
+    /* Thanh tiến trình đè lên canvas */
+    .pd-fake-progress {
+      position: absolute; top: 0; left: 0;
+      height: 100%; width: 0%;
+      background: rgba(6,182,212,0.22);
+      z-index: 2;
+      pointer-events: none;
+      transition: width 0.2s linear;
+    }
+    /* Đường cursor */
+    .pd-fake-cursor {
+      position: absolute; top: 0;
+      width: 2px; height: 100%;
+      background: rgba(255,255,255,0.60);
+      z-index: 3;
+      pointer-events: none;
+      left: 0%;
+    }
+    /* Thời gian hiện tại */
+    .pd-fake-time {
+      position: absolute; bottom: 6px; right: 10px;
+      font-size: 11px; font-weight: 600;
+      color: rgba(255,255,255,0.50);
+      z-index: 4; pointer-events: none;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Subtitle bar — hidden by default, shown via JS when transcript on */
+    .pd-subtitle {
+      margin: 12px 22px 0;
+      padding: 10px 16px; border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.85);
+      font-size: 14px; font-weight: 500;
+      min-height: 44px; align-items: center;
+      font-style: italic;
+      display: none;
+    }
+
+    /* Controls */
+    .pd-controls {
+      display: flex; align-items: center; gap: 10px;
+      padding: 16px 22px 22px; flex-wrap: wrap;
+    }
+    .pd-ctrl-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 16px; border-radius: 10px;
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700;
+      cursor: pointer; border: none; transition: var(--trans);
+    }
+    .pd-ctrl-btn--play {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: #fff; color: var(--navy);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.30);
+      flex-shrink: 0; padding: 0;
+    }
+    .pd-ctrl-btn--play:hover { transform: scale(1.08); box-shadow: 0 10px 32px rgba(0,0,0,0.40); }
+    .pd-ctrl-btn--sec {
+      background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.85);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .pd-ctrl-btn--sec:hover { background: rgba(255,255,255,0.18); }
+    .pd-ctrl-btn--tg {
+      background: rgba(91,79,207,0.20); color: rgba(255,255,255,0.85);
+      border: 1px solid rgba(91,79,207,0.35);
+    }
+    .pd-ctrl-btn--tg:hover { background: rgba(91,79,207,0.35); }
+    .pd-ctrl-btn--tg.is-on {
+      background: var(--violet); color: #fff; border-color: var(--violet);
+      box-shadow: 0 4px 16px rgba(91,79,207,0.40);
+    }
+    .pd-vol { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .pd-vol svg { stroke: rgba(255,255,255,0.50); flex-shrink: 0; }
+    .pd-vol input[type=range] { width: 80px; accent-color: var(--sky); cursor: pointer; }
+
+    /* Description */
+    .pd-desc { font-size: 14.5px; color: var(--muted); line-height: 1.78; }
+    .pd-desc p { margin-bottom: 10px; }
+    .pd-desc p:last-child { margin-bottom: 0; }
+
+    /* Transcript */
+    .pd-transcript {
+      max-height: 320px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 2px; padding-right: 4px;
+    }
+    .pd-transcript::-webkit-scrollbar { width: 4px; }
+    .pd-transcript::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .pd-t-line {
+      padding: 9px 14px; border-radius: 8px;
+      font-size: 13.5px; color: var(--muted); line-height: 1.65;
+      cursor: pointer; transition: var(--trans);
+      border: 1px solid transparent;
+    }
+    .pd-t-line:hover { background: var(--light); color: var(--navy); }
+    .pd-t-line.active {
+      background: linear-gradient(90deg, rgba(59,40,160,0.08), rgba(6,182,212,0.06));
+      color: var(--navy); font-weight: 600; border-color: rgba(59,40,160,0.15);
+    }
+    .pd-t-line .ts {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      color: var(--violet); margin-right: 8px; opacity: 0.7;
+      font-variant-numeric: tabular-nums;
+    }
+    .pd-t-controls {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 22px; border-top: 1px solid var(--border); background: var(--light);
+    }
+    .pd-t-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 14px; border-radius: 7px;
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+      border: 1px solid var(--border); background: #fff; color: var(--navy);
+      cursor: pointer; transition: var(--trans);
+    }
+    .pd-t-btn:hover { border-color: var(--violet); color: var(--violet); background: rgba(91,79,207,0.05); }
+    .pd-t-status { font-size: 12px; color: var(--muted); margin-left: 4px; }
+    .pd-t-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
+    .pd-t-empty svg { display: block; margin: 0 auto 12px; opacity: 0.35; }
+
+    /* Responsive */
+    @media (max-width: 840px) {
+      .pd-hero__inner { grid-template-columns: 1fr; padding-bottom: 24px; }
+      .pd-cover, .pd-cover-placeholder { transform: none; width: 180px; height: 180px; margin: 0 auto; }
+      .pd-grid { grid-template-columns: 1fr; padding-top: 24px; }
+      .pd-sidebar { order: 2; }
+      .pd-main { order: 1; }
+    }
+
+    @media (max-width: 640px) {
+      /* Hero */
+      .pd-hero { min-height: 280px; }
+      .pd-hero__inner { padding: 32px 16px 0; gap: 20px; }
+      .pd-cover, .pd-cover-placeholder {
+        width: 120px; height: 120px; border-radius: 12px;
+        transform: translateY(24px);
+      }
+      .pd-hero__title { font-size: 22px; }
+      .pd-hero__tags { gap: 6px; }
+      .h-tag { font-size: 11px; padding: 4px 10px; }
+
+      /* Body */
+      .pd-body { padding: 0 16px 60px; }
+      .pd-grid { gap: 20px; padding-top: 32px; }
+
+      /* Sidebar */
+      .pd-meta-card { padding: 16px; }
+      .pd-meta-row { padding: 8px 0; font-size: 12px; }
+
+      /* Player */
+      .pd-player__top { padding: 16px 16px 0; }
+      .pd-player__title { font-size: 15px; margin-bottom: 12px; }
+      .pd-waveform-wrap { height: 72px; }
+      #pd-waveform, #pd-fake-canvas { height: 72px; }
+
+      /* Controls */
+      .pd-controls { padding: 12px 16px 16px; gap: 8px; flex-wrap: nowrap; }
+      .pd-ctrl-btn--play { width: 44px; height: 44px; flex-shrink: 0; }
+      .pd-ctrl-btn--sec { padding: 7px 12px; font-size: 11px; }
+      .pd-ctrl-btn--tg { padding: 7px 12px; font-size: 11px; }
+      /* Volume ẩn trên mobile — tiết kiệm chỗ */
+      .pd-vol { display: none; }
+
+      /* Subtitle */
+      .pd-subtitle { margin: 8px 16px 0; font-size: 13px; min-height: 36px; }
+
+      /* Cards */
+      .pd-card__head { padding: 12px 16px; }
+      .pd-card__body { padding: 16px; }
+      .pd-desc { font-size: 13.5px; }
+
+      /* Transcript */
+      .pd-transcript { max-height: 240px; }
+      .pd-t-line { padding: 8px 10px; font-size: 13px; }
+      .pd-t-controls { padding: 10px 16px; }
+    }
+
+    /* Animations */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    .pd-card     { animation: fadeUp 0.4s ease both; }
+    .pd-player   { animation: fadeUp 0.4s ease 0.05s both; }
+    .pd-meta-card{ animation: fadeUp 0.4s ease 0.10s both; }
+
+  //- ══ HERO ══
+  section.pd-hero
+    //- 1. heroBg (ảnh chung từ public) → fallback thumbnail → fallback trắng
+    .pd-hero__bg(style=heroBg ? 'background-image:url(' + heroBg + ')' : (product.thumbnail ? 'background-image:url(' + product.thumbnail + ')' : ''))
+    .pd-hero__overlay
+    .pd-hero__inner
       if product.thumbnail
-        .image-wrapper
-          img.thumbnail(src=product.thumbnail alt="Air Purifier")
-      .info-grid
-        .info-item Giá: 
-          span.price #{product.price}$
-        .info-item Giảm giá: 
-          span.discount -#{product.discountPercentage}%
-        .info-item Giá mới: 
-          span.price #{product.newPrice}$
-        .info-item Còn lại: 
-          span.stock #{product.stock}
-      if product.description
-        p.description Mô tả: #{product.description}
-      a(
-            class="btn btn-warning btn-sm ml-1"
-            style="width:auto"
-            href=`${prefixAdmin}/products/edit/${product.id}`
-            ) Chỉnh sửa sản phẩm
+        img.pd-cover(src=product.thumbnail alt=product.title)
+      else
+        .pd-cover-placeholder
+          svg(width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.3)' stroke-width='1' stroke-linecap='round')
+            path(d='M9 18V5l12-2v13')
+            circle(cx='6' cy='18' r='3')
+            circle(cx='18' cy='16' r='3')
+
+      .pd-hero__text
+        p.pd-hero__eyebrow
+          span
+          | Podcast Episode
+        .pd-hero__tags
+          if product.level
+            span.h-tag.h-tag--level #{product.level}
+          if product.language
+            span.h-tag.h-tag--lang
+              svg(width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2')
+                circle(cx='12' cy='12' r='10')
+                line(x1='2' y1='12' x2='22' y2='12')
+                path(d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z')
+              | #{product.language.toUpperCase()}
+          if product.type && product.type !== 'product'
+            span.h-tag.h-tag--type #{product.type}
+          if !product.price || product.price === 0
+            span.h-tag.h-tag--free FREE
+        h1.pd-hero__title #{product.title}
+        p.pd-hero__cat
+          if product.category
+            | Danh mục:&nbsp;
+            a(href=`/products/category/${product.category.slug}`) #{product.category.title}
+          else
+            | Podcast Series
+
+  //- ══ BODY ══
+  .pd-body
+    .pd-grid
+
+      //- ── SIDEBAR
+      .pd-sidebar
+        .pd-meta-card
+          p.pd-meta-card__title Thông tin
+          if product.episodeNumber
+            .pd-meta-row
+              span.pd-meta-row__label Tập số
+              span.pd-meta-row__val ##{product.episodeNumber}
+          if product.level
+            .pd-meta-row
+              span.pd-meta-row__label Cấp độ
+              span.pd-meta-row__val
+                span.pd-meta-row__val--level #{product.level}
+          if product.language
+            .pd-meta-row
+              span.pd-meta-row__label Ngôn ngữ
+              span.pd-meta-row__val #{product.language.toUpperCase()}
+          if product.duration
+            .pd-meta-row
+              span.pd-meta-row__label Thời lượng
+              span.pd-meta-row__val #{Math.floor(product.duration/60)}:#{String(product.duration%60).padStart(2,'0')} phút
+          if product.playCount
+            .pd-meta-row
+              span.pd-meta-row__label Lượt nghe
+              span.pd-meta-row__val #{product.playCount.toLocaleString('vi-VN')}
+          if product.downloadCount
+            .pd-meta-row
+              span.pd-meta-row__label Lượt tải
+              span.pd-meta-row__val #{product.downloadCount.toLocaleString('vi-VN')}
+          if product.bitrate
+            .pd-meta-row
+              span.pd-meta-row__label Bitrate
+              span.pd-meta-row__val #{product.bitrate} kbps
+
+      //- ── MAIN
+      .pd-main
+
+        //- Player
+        if signedAudioUrl
+          .pd-player
+            .pd-player__top
+              p.pd-player__ep
+                | #{product.episodeNumber ? 'Episode ' + product.episodeNumber + ' · ' : ''}Đang phát
+              p.pd-player__title #{product.title}
+
+            //- Waveform: file > 5MB → fake canvas, file nhỏ → WaveSurfer
+            .pd-waveform-wrap(id='pd-waveform-wrap')
+              if product.size && product.size > 5242880
+                canvas#pd-fake-canvas
+                .pd-fake-progress(id='pd-fake-progress')
+                .pd-fake-cursor(id='pd-fake-cursor')
+                .pd-fake-time(id='pd-fake-time') 0:00
+                audio#pd-audio(src=signedAudioUrl preload='auto' style='display:none')
+              else
+                #pd-waveform
+
+            p.pd-subtitle(id='pd-subtitle') &nbsp;
+            .pd-controls
+              button.pd-ctrl-btn.pd-ctrl-btn--play(type='button' id='pd-play' aria-label='Play/Pause')
+                svg(width='18' height='18' viewBox='0 0 24 24' fill='#1A0F3C' stroke='none')
+                  polygon(points='5 3 19 12 5 21 5 3')
+              button.pd-ctrl-btn.pd-ctrl-btn--sec(type='button' id='pd-rew') -30s
+              button.pd-ctrl-btn.pd-ctrl-btn--sec(type='button' id='pd-fwd') +30s
+              button.pd-ctrl-btn.pd-ctrl-btn--tg(type='button' id='pd-tg')
+                svg(width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round')
+                  path(d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z')
+                  polyline(points='14 2 14 8 20 8')
+                  line(x1='16' y1='13' x2='8' y2='13')
+                  line(x1='16' y1='17' x2='8' y2='17')
+                | Transcript
+              .pd-vol
+                svg(width='14' height='14' viewBox='0 0 24 24' fill='none' stroke-width='2' stroke-linecap='round')
+                  polygon(points='11 5 6 9 2 9 2 15 6 15 11 19 11 5')
+                  path(d='M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07')
+                input(type='range' id='pd-vol' min='0' max='1' step='0.02' value='1')
+
+
+        //- Description
+        if product.description
+          .pd-card
+            .pd-card__head
+              .pd-card__head-icon
+                svg(width='15' height='15' viewBox='0 0 24 24' fill='none' stroke-width='2' stroke-linecap='round')
+                  line(x1='8' y1='6' x2='21' y2='6')
+                  line(x1='8' y1='12' x2='21' y2='12')
+                  line(x1='8' y1='18' x2='21' y2='18')
+                  line(x1='3' y1='6' x2='3.01' y2='6')
+                  line(x1='3' y1='12' x2='3.01' y2='12')
+                  line(x1='3' y1='18' x2='3.01' y2='18')
+              h2 Mô tả
+            .pd-card__body
+              .pd-desc !{product.description}
+
+        //- Transcript card (ẩn mặc định, JS bật/tắt)
+        .pd-card#pd-transcript-card(style='display:none')
+          .pd-card__head
+            .pd-card__head-icon
+              svg(width='15' height='15' viewBox='0 0 24 24' fill='none' stroke-width='2' stroke-linecap='round')
+                path(d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z')
+                polyline(points='14 2 14 8 20 8')
+                line(x1='16' y1='13' x2='8' y2='13')
+                line(x1='16' y1='17' x2='8' y2='17')
+            h2 Transcript
+          if product.transcript
+            .pd-card__body(style='padding-bottom:0')
+              .pd-transcript(id='pd-transcript')
+                - let segs = []
+                - try { segs = typeof product.transcript === 'string' ? JSON.parse(product.transcript) : product.transcript } catch(e) { segs = [] }
+                if Array.isArray(segs) && segs.length
+                  each seg, i in segs
+                    p.pd-t-line(id=`ts-${i}` data-start=seg.start data-end=(seg.end||''))
+                      span.ts= (String(Math.floor((seg.start||0)/60)).padStart(2,'0') + ':' + String(Math.floor((seg.start||0)%60)).padStart(2,'0'))
+                      | #{seg.text}
+                else
+                  p.pd-t-line(style='font-style:italic') #{product.transcript}
+            .pd-t-controls
+              button.pd-t-btn(type='button' id='pd-copy-t')
+                svg(width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2')
+                  rect(x='9' y='9' width='13' height='13' rx='2' ry='2')
+                  path(d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1')
+                | Sao chép
+              span.pd-t-status(id='pd-t-status')
+          else
+            .pd-card__body
+              .pd-t-empty
+                svg(width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='#6E6A8A' stroke-width='1.5')
+                  path(d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z')
+                  polyline(points='14 2 14 8 20 8')
+                p Chưa có transcript cho episode này.
+
+  //- ══ SCRIPTS ══
+  script(src='https://unpkg.com/wavesurfer.js@6.1.0/dist/wavesurfer.min.js')
+  script.
+    (function(){
+      var audioUrl  = !{JSON.stringify(signedAudioUrl || null)};
+      var fileSize  = !{JSON.stringify(product.size || 0)};
+      var isBigFile = fileSize > 5242880; // > 5MB
+
+      if (!audioUrl) return;
+
+      var playBtn      = document.getElementById('pd-play');
+      var volRange     = document.getElementById('pd-vol');
+      var subtitleEl   = document.getElementById('pd-subtitle');
+      var transcriptEl = document.getElementById('pd-transcript');
+      var tCard        = document.getElementById('pd-transcript-card');
+      var toggleBtn    = document.getElementById('pd-tg');
+      var transcriptOn = false;
+
+      var PLAY  = '<svg width="18" height="18" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="#1A0F3C"/></svg>';
+      var PAUSE = '<svg width="18" height="18" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1" fill="#1A0F3C"/><rect x="14" y="4" width="4" height="16" rx="1" fill="#1A0F3C"/></svg>';
+
+      function fmt(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0'); }
+
+      // ════════════════════════════════════════
+      // NHÁNH A: FILE LỚN > 5MB → Canvas + HTML5 Audio thuần
+      // ════════════════════════════════════════
+      if (isBigFile) {
+        var audio    = document.getElementById('pd-audio');
+        var canvas   = document.getElementById('pd-fake-canvas');
+        var progress = document.getElementById('pd-fake-progress');
+        var cursor   = document.getElementById('pd-fake-cursor');
+        var timeEl   = document.getElementById('pd-fake-time');
+        var wrap     = document.getElementById('pd-waveform-wrap');
+
+        // Vẽ wave random 1 lần duy nhất lên canvas
+        function drawFakeWave() {
+          if (!canvas) return;
+          var W = canvas.offsetWidth || 700;
+          var H = canvas.offsetHeight || 100;
+          canvas.width  = W;
+          canvas.height = H;
+          var ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, W, H);
+
+          var barW   = 3;
+          var gap    = 2;
+          var step   = barW + gap;
+          var count  = Math.floor(W / step);
+          var mid    = H / 2;
+          // seed đơn giản để wave trông tự nhiên
+          var seed = 42;
+          function rand() { seed = (seed * 1664525 + 1013904223) & 0xffffffff; return (seed >>> 0) / 0xffffffff; }
+
+          for (var i = 0; i < count; i++) {
+            var r1 = rand(), r2 = rand();
+            // Box-Muller để wave có hình chuông tự nhiên hơn
+            var gauss = Math.sqrt(-2 * Math.log(r1 + 0.0001)) * Math.cos(2 * Math.PI * r2);
+            var h = Math.min(H * 0.85, Math.max(4, Math.abs(gauss) * H * 0.28 + rand() * H * 0.15));
+            var x = i * step;
+            var y = mid - h / 2;
+            ctx.fillStyle = 'rgba(255,255,255,0.30)';
+            ctx.beginPath();
+            ctx.roundRect ? ctx.roundRect(x, y, barW, h, 2) : ctx.rect(x, y, barW, h);
+            ctx.fill();
+          }
+        }
+        drawFakeWave();
+        window.addEventListener('resize', drawFakeWave);
+
+        // Cập nhật progress + cursor + time theo audio
+        function updateProgress() {
+          if (!audio || !audio.duration) return;
+          var pct = audio.currentTime / audio.duration;
+          var pStr = (pct * 100).toFixed(2) + '%';
+          if (progress) progress.style.width = pStr;
+          if (cursor)   cursor.style.left    = pStr;
+          if (timeEl)   timeEl.textContent   = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+          syncTranscript(audio.currentTime);
+        }
+
+        audio && audio.addEventListener('timeupdate', updateProgress);
+        audio && audio.addEventListener('ended', function(){
+          playBtn.innerHTML = PLAY;
+          if (progress) progress.style.width = '0%';
+          if (cursor)   cursor.style.left    = '0%';
+          audio.currentTime = 0;
+        });
+
+        // Click trên waveform → seek
+        wrap && wrap.addEventListener('click', function(e){
+          if (!audio || !audio.duration) return;
+          var rect = wrap.getBoundingClientRect();
+          var pct  = (e.clientX - rect.left) / rect.width;
+          audio.currentTime = pct * audio.duration;
+        });
+
+        // Play/pause
+        audio && audio.addEventListener('play',  function(){ playBtn.innerHTML = PAUSE; });
+        audio && audio.addEventListener('pause', function(){ playBtn.innerHTML = PLAY; });
+
+        playBtn && playBtn.addEventListener('click', function(){
+          if (!audio) return;
+          audio.paused ? audio.play() : audio.pause();
+        });
+
+        // ±30s
+        document.getElementById('pd-rew') && document.getElementById('pd-rew').addEventListener('click', function(){
+          if (audio) audio.currentTime = Math.max(0, audio.currentTime - 30);
+        });
+        document.getElementById('pd-fwd') && document.getElementById('pd-fwd').addEventListener('click', function(){
+          if (audio) audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 30);
+        });
+
+        // Volume
+        volRange && volRange.addEventListener('input', function(){
+          if (audio) audio.volume = parseFloat(this.value);
+        });
+
+      // ════════════════════════════════════════
+      // NHÁNH B: FILE NHỎ ≤ 5MB → WaveSurfer bình thường
+      // ════════════════════════════════════════
+      } else {
+        var ws = WaveSurfer.create({
+          container: '#pd-waveform',
+          backend: 'MediaElement',
+          waveColor: 'rgba(255,255,255,0.15)',
+          progressColor: 'rgba(6,182,212,0.80)',
+          cursorColor: 'rgba(255,255,255,0.40)',
+          height: 100, barWidth: 2, barRadius: 2,
+          normalize: true, responsive: true
+        });
+        ws.load(audioUrl);
+        ws.on('ready', function(){ ws.setVolume(parseFloat(volRange.value)); });
+        ws.on('error', function(e){ console.warn('WS:', e); });
+
+        playBtn && playBtn.addEventListener('click', function(){ ws.isPlaying() ? ws.pause() : ws.play(); });
+        ws.on('play',   function(){ playBtn.innerHTML = PAUSE; });
+        ws.on('pause',  function(){ playBtn.innerHTML = PLAY; });
+        ws.on('finish', function(){ playBtn.innerHTML = PLAY; ws.seekTo(0); });
+
+        ws.on('audioprocess', function(t){ syncTranscript(t); });
+
+        document.getElementById('pd-rew') && document.getElementById('pd-rew').addEventListener('click', function(){
+          var d = ws.getDuration()||1; ws.seekTo(Math.max(0,(ws.getCurrentTime()-30)/d));
+        });
+        document.getElementById('pd-fwd') && document.getElementById('pd-fwd').addEventListener('click', function(){
+          var d = ws.getDuration()||1; ws.seekTo(Math.min(1,(ws.getCurrentTime()+30)/d));
+        });
+        volRange && volRange.addEventListener('input', function(){ ws.setVolume(parseFloat(this.value)); });
+      }
+
+      // ════════════════════════════════════════
+      // CHUNG: Transcript toggle + sync
+      // ════════════════════════════════════════
+      function setTranscript(show){
+        transcriptOn = show;
+        if (subtitleEl) {
+          subtitleEl.style.display = show ? 'flex' : 'none';
+          subtitleEl.style.opacity = show ? '1' : '0';
+        }
+        if (tCard) {
+          if (show) {
+            tCard.style.display = 'block';
+            requestAnimationFrame(function(){
+              tCard.style.transition = 'opacity 0.25s';
+              tCard.style.opacity = '1';
+            });
+          } else {
+            tCard.style.transition = 'opacity 0.25s';
+            tCard.style.opacity = '0';
+            setTimeout(function(){ tCard.style.display = 'none'; }, 260);
+          }
+        }
+        if (toggleBtn) toggleBtn.classList.toggle('is-on', show);
+      }
+
+      // ── Tự động mở transcript khi load trang ──
+      setTranscript(true);
+
+      toggleBtn && toggleBtn.addEventListener('click', function(){ setTranscript(!transcriptOn); });
+
+      var lines  = [];
+      var curIdx = -1;
+
+      function buildLines(){
+        if (!transcriptEl) return;
+        lines = Array.prototype.slice.call(transcriptEl.querySelectorAll('.pd-t-line')).map(function(el){
+          return { el: el, start: Number(el.dataset.start||0), end: el.dataset.end ? Number(el.dataset.end) : null };
+        });
+      }
+      buildLines();
+
+      function syncTranscript(t){
+        if (!lines.length) return;
+        var found = -1;
+        for (var i = 0; i < lines.length; i++){
+          var end = lines[i].end != null ? lines[i].end : (lines[i+1] ? lines[i+1].start : Infinity);
+          if (t >= lines[i].start && t < end){ found = i; break; }
+        }
+        if (found === curIdx) return;
+        if (curIdx >= 0 && lines[curIdx]) lines[curIdx].el.classList.remove('active');
+        curIdx = found;
+        if (curIdx >= 0 && lines[curIdx]){
+          var el = lines[curIdx].el;
+          el.classList.add('active');
+          if (subtitleEl) subtitleEl.textContent = el.textContent.replace(/^\d+:\d+\s*/, '');
+          if (transcriptEl){
+            var elR = el.getBoundingClientRect();
+            var pR  = transcriptEl.getBoundingClientRect();
+            transcriptEl.scrollTop += elR.top - pR.top - pR.height/2 + elR.height/2;
+          }
+        } else {
+          if (subtitleEl) subtitleEl.innerHTML = '&nbsp;';
+        }
+      }
+
+      transcriptEl && transcriptEl.addEventListener('click', function(e){
+        var line = e.target.closest('.pd-t-line');
+        if (!line) return;
+        var start = Number(line.dataset.start||0);
+        if (isBigFile) {
+          var audio = document.getElementById('pd-audio');
+          if (audio) audio.currentTime = start;
+        } else {
+          var d = ws.getDuration()||1;
+          ws.seekTo(Math.max(0, Math.min(1, start/d)));
+        }
+      });
+
+      var copyBtn = document.getElementById('pd-copy-t');
+      var tStatus = document.getElementById('pd-t-status');
+      copyBtn && copyBtn.addEventListener('click', function(){
+        var text = lines.map(function(l){ return l.el.textContent; }).join('\n');
+        navigator.clipboard && navigator.clipboard.writeText(text).then(function(){
+          var old = copyBtn.innerHTML;
+          copyBtn.textContent = '✓ Đã sao chép';
+          if (tStatus) tStatus.textContent = '';
+          setTimeout(function(){ copyBtn.innerHTML = old; }, 1800);
+        }).catch(function(){
+          if (tStatus) tStatus.textContent = 'Không thể sao chép tự động.';
+        });
+      });
+
+    })();

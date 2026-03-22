@@ -1,0 +1,341 @@
+//- extends ../../layouts/auth.pug
+//- include ../../mixins/alert.pug 
+
+//- block main 
+//-     +alert-error(5000)
+//-     .container.my-5
+//-         .row.justify-content-center 
+//-             .col-8
+
+//-                 h1(class="text-center") Đăng nhập 
+//-                 form(
+//-                     action=`${prefixAdmin}/auth/login`
+//-                     method="POST"
+                    
+//-                 )
+
+//-                     div(class="form-group")
+//-                         label(for="email") Email *
+//-                         input(
+//-                             type="email"
+//-                             class="form-control"
+//-                             id="email"
+//-                             name="email" 
+                            
+                            
+//-                         )
+
+//-                     div(class="form-group")
+//-                         label(for="password") Mật khẩu *
+//-                         input(
+//-                             type="password"
+//-                             class="form-control"
+//-                             id="password"
+//-                             name="password" 
+                            
+                            
+//-                         )
+                    
+                    
+//-                     div(class="form-group") 
+//-                         button(
+//-                             type="submit"
+//-                             class="btn btn-primary btn-block"
+//-                         ) Đăng nhập
+
+extends ../../layouts/auth.pug
+include ../../mixins/alert.pug
+
+block main
+  //- Embedded CSS (keeps everything inside block main)
+  style.
+    :root{
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --muted: #6b7280;
+      --accent: #4f46e5;
+      --accent-2: #06b6d4;
+      --glass: rgba(255,255,255,0.6);
+      --radius: 12px;
+      --transition: 180ms cubic-bezier(.2,.9,.2,1);
+      --max-width: 1200px;
+      font-family: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color-scheme: light;
+    }
+
+    /* Page wrapper */
+    .auth-wrapper{
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 60%);
+      padding: 2rem;
+      box-sizing: border-box;
+      overflow: auto;
+    }
+
+    /* Split card container */
+    .auth-split-card{
+      width: 100%;
+      max-width: var(--max-width);
+      height: calc(100vh - 4rem);
+      display: flex;
+      border-radius: calc(var(--radius) + 4px);
+      overflow: hidden;
+      background: transparent;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+      border: 1px solid rgba(15,23,42,0.04);
+    }
+
+    /* Left panel: image with subtle overlay and blur */
+    .auth-left{
+      flex: 1 1 55%;
+      min-width: 360px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(2,6,23,0.06), rgba(2,6,23,0.06));
+    }
+
+    .auth-left-img{
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(1.02) contrast(1.02) brightness(0.95);
+      transform-origin: center;
+      transition: transform 8s ease;
+      will-change: transform;
+    }
+
+    /* gentle parallax on hover for desktop */
+    .auth-left:hover .auth-left-img{
+      transform: scale(1.03) translateY(-3%);
+    }
+
+    /* overlay for better text contrast */
+    .auth-left::after{
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(2,6,23,0.28) 0%, rgba(2,6,23,0.18) 40%, rgba(2,6,23,0.36) 100%);
+      pointer-events: none;
+      mix-blend-mode: multiply;
+    }
+
+    .brand-wrap{
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: #fff;
+      padding: 3rem 2rem;
+      width: 100%;
+      max-width: 36rem;
+      pointer-events: none;
+    }
+
+    .brand-title{
+      font-weight: 800;
+      font-size: 2rem;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-shadow: 0 10px 30px rgba(2,6,23,0.45);
+      margin-bottom: 0.5rem;
+    }
+
+    .brand-sub{
+      color: rgba(255,255,255,0.92);
+      font-size: 1.02rem;
+      max-width: 28rem;
+      margin: 0.25rem auto 0;
+      line-height: 1.5;
+      opacity: 0.95;
+    }
+
+    /* Right panel: centered card */
+    .auth-right{
+      flex: 1 1 45%;
+      min-width: 320px;
+      height: 100%;
+      padding: 3.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.9));
+    }
+
+    .auth-card{
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 2.25rem;
+      box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+      border: 1px solid rgba(15,23,42,0.04);
+    }
+
+    .auth-card h1{
+      font-size: 1.5rem;
+      margin-bottom: 0.25rem;
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    .auth-card p.lead{
+      margin-bottom: 1.25rem;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    /* Form layout */
+    .form-vertical-gap > .form-group{
+      margin-bottom: 1rem;
+    }
+
+    .form-group label{
+      color: #374151;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      display: block;
+      font-weight: 600;
+    }
+
+    .form-control{
+      width: 100%;
+      background: #fff;
+      border: 1px solid rgba(15,23,42,0.08);
+      color: #0f172a;
+      padding: 0.75rem 0.9rem;
+      border-radius: 10px;
+      transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+      box-shadow: 0 6px 18px rgba(15,23,42,0.03);
+      font-size: 0.98rem;
+      appearance: none;
+    }
+
+    .form-control::placeholder{
+      color: #9ca3af;
+    }
+
+    .form-control:focus{
+      outline: none;
+      border-color: rgba(79,70,229,0.95);
+      box-shadow: 0 12px 30px rgba(79,70,229,0.08);
+      transform: translateY(-1px);
+    }
+
+    /* Password visibility / small helper row */
+    .form-row{
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-primary{
+      background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
+      border: none;
+      padding: 0.85rem 1rem;
+      font-weight: 700;
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(79,70,229,0.12);
+      transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition);
+      color: #fff;
+      width: 100%;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .btn-primary:hover{
+      transform: translateY(-3px);
+      box-shadow: 0 18px 40px rgba(79,70,229,0.16);
+      opacity: 0.98;
+    }
+
+    .btn-primary:active{
+      transform: translateY(-1px) scale(0.998);
+    }
+
+    .form-help{
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-top: 0.6rem;
+    }
+
+    a.text-decoration-none{
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Small subtle footer note */
+    .auth-card .small-muted{
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    /* Responsive: stack on small screens */
+    @media (max-width: 900px){
+      .auth-split-card{
+        flex-direction: column;
+        height: auto;
+        max-height: none;
+      }
+      .auth-left{
+        display: block;
+        height: 220px;
+        min-height: 180px;
+      }
+      .auth-right{
+        padding: 1.5rem;
+      }
+      .auth-card{
+        margin-top: -48px;
+        box-shadow: 0 18px 40px rgba(15,23,42,0.08);
+      }
+      .brand-wrap{ padding: 1.25rem; }
+    }
+
+    @media (max-width: 480px){
+      .auth-card{ padding: 1.25rem; border-radius: 10px; }
+      .brand-title{ font-size: 1.25rem; }
+      .brand-sub{ font-size: 0.92rem; }
+    }
+
+  //- Markup (full-bleed)
+  .auth-wrapper
+    .auth-split-card
+      //- Left: image + brand overlay. Pass imageSrc from server when rendering.
+      .auth-left
+        //- Use imageSrc variable from server; fallback to a default path
+        img.auth-left-img(src=(typeof imageSrc !== 'undefined' ? imageSrc : '/uploads/podcastBackground.jpg') alt='Illustration' loading='eager')
+        .brand-wrap
+          .brand-title Trang web podcast 
+          .brand-sub 
+
+      //- Right: login form
+      .auth-right
+        .auth-card
+          +alert-error(5000)
+          h1 Đăng nhập
+          p.lead Đăng nhập để trải nghiệm dịch vụ
+          form(action=`${prefixAdmin}/auth/login` method='POST' class='form-vertical-gap')
+            .form-group
+              label(for='email') Email *
+              input(type='email' class='form-control' id='email' name='email' placeholder='you@example.com' required)
+            .form-group
+              label(for='password') Mật khẩu *
+              input(type='password' class='form-control' id='password' name='password' placeholder='Mật khẩu của bạn' required)
+            .form-group
+              button(type='submit' class='btn btn-primary') Đăng nhập
+            .form-help.text-center
+              | Chưa có tài khoản?
+              a(href=`${prefixAdmin}/auth/register` class='text-decoration-none' style='color: var(--accent); margin-left: 6px;') Đăng ký
+          .small-muted Bằng việc đăng nhập bạn đồng ý với điều khoản và chính sách bảo mật.

@@ -1,139 +1,524 @@
-extends ../../layouts/default.pug 
+//- extends ../../layouts/default.pug 
+//- include ../../mixins/alert.pug
+//- include ../../mixins/select-tree.pug
+//- block main 
+//-     +alert-success(5000) 
+//-     +alert-error(5000) 
+//-     h1(class="mb-4") Thêm mới sản phẩm 
+//-     form(
+//-         action=`${prefixAdmin}/products/create`
+//-         id="form-create-product"
+//-         method="POST" 
+//-         enctype="multipart/form-data"
+//-     )
+//-         div(class="form-group")
+//-             label(for="title") Tiêu đề
+//-             input(
+//-                 name="title"
+//-                 id="title"
+//-                 type="text"
+//-                 class="form-control"
+               
+//-             ) 
+//-         div(class="form-group")
+//-             label(for="product_category_id") --Danh mục --
+//-             select(
+//-                 id="product_category_id" 
+//-                 class="form-control"
+//-                 name="product_category_id"
+//-             )
+//-                 option(value="") Chọn danh mục 
+//-                 if(category) 
+//-                     +select-tree(category,1,category.parent_id) 
+//-         div(class="form-group")
+//-             label(for="desc") Mô tả
+//-             textarea(
+//-                 name="description"
+//-                 id="desc"
+//-                 type="text"
+//-                 class="form-control"
+                
+//-             ) 
+//-         div(class="form-group")
+//-             label(for="price") Giá 
+//-             input(
+//-                 name="price"
+//-                 id="price"
+//-                 type="number"
+//-                 class="form-control"
+//-                 value=0
+//-                 min=0
+                
+//-             ) 
+//-         div(class="form-group")
+//-             label(for="discount") % giảm giá 
+//-             input(
+//-                 name="discountPercentage"
+//-                 id="discount"
+//-                 type="number"
+//-                 class="form-control"
+//-                 value=0
+//-                 min=0
+                
+//-             ) 
+
+//-         div(class="form-group")
+//-             label(for="stock") Số lượng
+//-             input(
+//-                 name="stock"
+//-                 id="stock"
+//-                 type="number"
+//-                 class="form-control"
+//-                 value=0
+//-                 min=0
+                
+//-             ) 
+
+//-         div(
+//-             class="form-group"
+//-             upload-image
+//-             )
+//-             label(for="thumbnail") Ảnh
+//-             input(
+//-                 name="thumbnail"
+//-                 id="thumbnail"
+//-                 type="file"
+//-                 class="form-control-file"
+//-                 accept="image/*"
+//-                 upload-image-input
+//-             ) 
+//-             div(class="image-container")
+//-                 img(
+//-                     upload-image-preview
+//-                 ) 
+//-                 span(class="close-image" style="display:none") x
+
+//-         div(class="form-group")
+//-             label(for="position") Vị trí
+//-             input(
+//-                 name="position"
+//-                 id="position"
+//-                 type="number"
+//-                 class="form-control"
+//-                 placeholder="Tự động tăng"
+//-                 min=0
+//-             ) 
+//-         div(class="form-group form-check form-check-inline")
+//-             input(
+//-                 type="radio"
+//-                 class="form-check-input"
+//-                 id="statusActive"
+//-                 value="active"
+//-                 name="status"
+//-                 checked
+//-             ) 
+//-             label(
+//-                 for="statusActive"
+//-                 class="form-check-label"
+//-             ) Hoạt động 
+
+//-         div(class="form-group form-check form-check-inline")
+//-             input(
+//-                 type="radio"
+//-                 class="form-check-input"
+//-                 id="statusInactive"
+//-                 value="inactive"
+//-                 name="status"
+//-             ) 
+//-             label(
+//-                 for="statusInactive"
+//-                 class="form-check-label"
+//-             )  Dừng Hoạt động 
+        
+//-         div(class="form-group")
+//-             button(
+//-                 type="submit"
+//-                 class=" btn btn-outline-primary"
+//-             ) Thêm mới
+
+//-         script(src="/admin/js/product.js")
+//- views/admin/products/create.pug
+//---------------------------------------------------------------
+
+
+
+//- extends ../../layouts/default.pug
+//- include ../../mixins/alert.pug
+//- include ../../mixins/select-tree.pug
+
+//- block main
+//-   +alert-success(5000)
+//-   +alert-error(5000)
+//-   h1(class="mb-4") Thêm mới sản phẩm
+
+//-   form(
+//-     action=`${prefixAdmin}/products/create`
+//-     id="form-create-product"
+//-     method="POST"
+//-     enctype="multipart/form-data"
+//-   )
+//-     .row
+//-       .col-md-8
+//-         //- Title
+//-         .form-group
+//-           label(for="title") Tiêu đề
+//-           input#title.form-control(
+//-             name="title"
+//-             type="text"
+//-             required
+//-             placeholder="Tên file / tiêu đề"
+//-             value=(typeof product !== 'undefined' && product.title ? product.title : '')
+//-           )
+
+//-         //- Category (tree)
+//-         .form-group
+//-           label(for="product_category_id") --Danh mục --
+//-           select#product_category_id.form-control(name="product_category_id")
+//-             option(value="") Chọn danh mục
+//-             if category
+//-               +select-tree(category,1, (typeof product !== 'undefined' ? product.product_category_id : null))
+
+//-         //- Description
+//-         .form-group
+//-           label(for="description") Mô tả
+//-           textarea#description.form-control(name="description" rows="4") #{typeof product !== 'undefined' && product.description ? product.description : ''}
+
+//-         //- Level
+//-         .form-group
+//-           label(for="level") Trình độ
+//-           select#level.form-control(name="level")
+//-             option(value="") --Chọn--
+//-             option(value="A1" selected=(typeof product !== 'undefined' && product.level === 'A1')) A1
+//-             option(value="A2" selected=(typeof product !== 'undefined' && product.level === 'A2')) A2
+//-             option(value="B1" selected=(typeof product !== 'undefined' && product.level === 'B1')) B1
+//-             option(value="B2" selected=(typeof product !== 'undefined' && product.level === 'B2')) B2
+
+//-         //- Audio file upload
+//-         .form-group
+//-           label(for="file") Chọn file audio
+//-           input#file.form-control-file(
+//-             type="file"
+//-             name="file"
+//-             accept="audio/*"
+//-             required
+//-           )
+//-           small.form-text.text-muted Max 200MB; định dạng mp3, wav, ogg
+
+//-         //- Audio preview + waveform container
+//-         .form-group
+//-           audio#previewAudio(controls style="width:100%; display:none")
+//-             source(src="" type="audio/mpeg")
+//-         .form-group
+//-           div#waveform(style="height:80px; display:none")
+
+//-         //- Transcript (optional)
+//-         .form-group
+//-           label(for="transcript") Transcript (tùy chọn)
+//-           textarea#transcript.form-control(name="transcript" rows="6") #{typeof product !== 'undefined' && product.transcript ? product.transcript : ''}
+
+//-       .col-md-4
+//-         .card
+//-           .card-body
+//-             //- Thumbnail / cover image
+//-             .form-group
+//-               label(for="thumbnail") Ảnh bìa
+//-               input#thumbnail.form-control-file(
+//-                 type="file"
+//-                 name="thumbnail"
+//-                 accept="image/*"
+//-               )
+//-               .mt-2
+//-               - var thumbSrc = (typeof product !== 'undefined' && product.thumbnail) ? product.thumbnail : '/images/default-thumb.png'
+//-               img#thumbPreview(src=thumbSrc style="width:100%; height:auto; display:block; border-radius:4px")
+
+//-             //- Price (kept for compatibility)
+//-             .form-group
+//-               label(for="price") Giá
+//-               input#price.form-control(
+//-                 type="number"
+//-                 name="price"
+//-                 min=0
+//-                 step="any"
+//-                 value=(typeof product !== 'undefined' && product.price ? product.price : 0)
+//-               )
+
+//-             //- Discount %
+//-             .form-group
+//-               label(for="discountPercentage") % giảm giá
+//-               input#discount.form-control(
+//-                 type="number"
+//-                 name="discountPercentage"
+//-                 min=0
+//-                 value=(typeof product !== 'undefined' && product.discountPercentage ? product.discountPercentage : 0)
+//-                 step="any"
+//-               )
+
+//-             //- Stock (kept for compatibility)
+//-             .form-group
+//-               label(for="stock") Số lượng
+//-               input#stock.form-control(
+//-                 type="number"
+//-                 name="stock"
+//-                 min=0
+//-                 value=(typeof product !== 'undefined' && product.stock ? product.stock : 0)
+//-               )
+
+//-             //- Position
+//-             .form-group
+//-               label(for="position") Vị trí
+//-               input#position.form-control(
+//-                 type="number"
+//-                 name="position"
+//-                 placeholder="Tự động tăng"
+//-                 min=0
+//-                 value=(typeof product !== 'undefined' && product.position ? product.position : 0)
+//-               )
+
+//-             //- Status radio
+//-             .form-group
+//-               label Trạng thái
+//-               .form-check
+//-                 input.form-check-input(
+//-                   type="radio"
+//-                   name="status"
+//-                   id="statusActive"
+//-                   value="active"
+//-                   checked=(typeof product === 'undefined' || product.status === 'active')
+//-                 )
+//-                 label.form-check-label(for="statusActive") Hoạt động
+//-               .form-check
+//-                 input.form-check-input(
+//-                   type="radio"
+//-                   name="status"
+//-                   id="statusInactive"
+//-                   value="inactive"
+//-                   checked=(typeof product !== 'undefined' && product.status === 'inactive')
+//-                 )
+//-                 label.form-check-label(for="statusInactive") Dừng Hoạt động
+
+//-             //- Submit / Cancel
+//-             .form-group.mt-3
+//-               button.btn.btn-outline-primary(type="submit") Thêm mới
+//-               a.btn.btn-secondary.ml-2(href=`${prefixAdmin}/products`) Hủy
+
+//-   //- Wavesurfer (for waveform preview) — include once globally if possible
+//-   script(src="https://unpkg.com/wavesurfer.js")
+
+//-   //- Inline script: preview audio, waveform, thumbnail preview, simple validation
+//-   script.
+//-     (function(){
+//-       // audio preview + waveform
+//-       const fileInput = document.getElementById('file');
+//-       const audioEl = document.getElementById('previewAudio');
+//-       const waveformEl = document.getElementById('waveform');
+//-       let wavesurfer = null;
+
+//-       if (fileInput) {
+//-         fileInput.addEventListener('change', function(e){
+//-           const file = e.target.files[0];
+//-           if (!file) {
+//-             if (audioEl) { audioEl.style.display = 'none'; audioEl.querySelector('source').src = ''; audioEl.load(); }
+//-             if (waveformEl) waveformEl.style.display = 'none';
+//-             if (wavesurfer) { wavesurfer.destroy(); wavesurfer = null; }
+//-             return;
+//-           }
+
+//-           const url = URL.createObjectURL(file);
+
+//-           // HTML5 audio preview
+//-           if (audioEl) {
+//-             audioEl.style.display = 'block';
+//-             audioEl.querySelector('source').src = url;
+//-             audioEl.load();
+//-           }
+
+//-           // waveform preview
+//-           if (waveformEl) {
+//-             waveformEl.style.display = 'block';
+//-             if (wavesurfer) { wavesurfer.destroy(); wavesurfer = null; }
+//-             try {
+//-               wavesurfer = WaveSurfer.create({
+//-                 container: '#waveform',
+//-                 waveColor: '#97c2ff',
+//-                 progressColor: '#2b8cff',
+//-                 height: 60,
+//-                 responsive: true
+//-               });
+//-               wavesurfer.load(url);
+//-             } catch (err) {
+//-               console.warn('WaveSurfer init failed', err);
+//-             }
+//-           }
+//-         });
+//-       }
+
+//-       // thumbnail preview
+//-       const thumbInput = document.getElementById('thumbnail');
+//-       const thumbPreview = document.getElementById('thumbPreview');
+//-       thumbInput && thumbInput.addEventListener('change', function(e){
+//-         const f = e.target.files[0];
+//-         if (!f) return;
+//-         const u = URL.createObjectURL(f);
+//-         thumbPreview.src = u;
+//-       });
+
+//-       // simple client validation before submit
+//-       const form = document.getElementById('form-create-product');
+//-       form && form.addEventListener('submit', function(e){
+//-         const title = document.getElementById('title').value.trim();
+//-         if (!title) { e.preventDefault(); alert('Vui lòng nhập tiêu đề'); return false; }
+//-         const file = document.getElementById('file').files[0];
+//-         if (!file) { e.preventDefault(); alert('Vui lòng chọn file audio'); return false; }
+//-         // allow normal form submit; server handles upload & validation
+//-       });
+//-     })();
+
+//-   //- Keep existing admin JS behaviors (status toggle, etc.) if needed
+//-   script(src="/admin/js/product.js")
+
+
+//--------------------------------------------------------
+extends ../../layouts/default.pug
 include ../../mixins/alert.pug
 include ../../mixins/select-tree.pug
-block main 
-    +alert-success(5000) 
-    +alert-error(5000) 
-    h1(class="mb-4") Thêm mới sản phẩm 
-    form(
-        action=`${prefixAdmin}/products/create`
-        id="form-create-product"
-        method="POST" 
-        enctype="multipart/form-data"
-    )
-        div(class="form-group")
-            label(for="title") Tiêu đề
-            input(
-                name="title"
-                id="title"
-                type="text"
-                class="form-control"
-               
-            ) 
-        div(class="form-group")
-            label(for="product_category_id") --Danh mục --
-            select(
-                id="product_category_id" 
-                class="form-control"
-                name="product_category_id"
-            )
-                option(value="") Chọn danh mục 
-                if(category) 
-                    +select-tree(category,1,category.parent_id) 
-        div(class="form-group")
-            label(for="desc") Mô tả
-            textarea(
-                name="description"
-                id="desc"
-                type="text"
-                class="form-control"
-                
-            ) 
-        div(class="form-group")
-            label(for="price") Giá 
-            input(
-                name="price"
-                id="price"
-                type="number"
-                class="form-control"
-                value=0
-                min=0
-                
-            ) 
-        div(class="form-group")
-            label(for="discount") % giảm giá 
-            input(
-                name="discountPercentage"
-                id="discount"
-                type="number"
-                class="form-control"
-                value=0
-                min=0
-                
-            ) 
 
-        div(class="form-group")
-            label(for="stock") Số lượng
-            input(
-                name="stock"
-                id="stock"
-                type="number"
-                class="form-control"
-                value=0
-                min=0
-                
-            ) 
+block main
+  +alert-success(5000)
+  +alert-error(5000)
+  h1.mb-4 Thêm mới sản phẩm
 
-        div(
-            class="form-group"
-            upload-image
-            )
-            label(for="thumbnail") Ảnh
-            input(
-                name="thumbnail"
-                id="thumbnail"
-                type="file"
-                class="form-control-file"
-                accept="image/*"
-                upload-image-input
-            ) 
-            div(class="image-container")
-                img(
-                    upload-image-preview
-                ) 
-                span(class="close-image" style="display:none") x
+  form#form-create-product(method="POST" action=`${prefixAdmin}/products/create` enctype="multipart/form-data")
+    .row
+      .col-md-8
+        .form-group
+          label(for="title") Tiêu đề
+          input#title.form-control(name="title" type="text" required placeholder="Tên file / tiêu đề" value=(typeof product !== 'undefined' && product.title ? product.title : ''))
 
-        div(class="form-group")
-            label(for="position") Vị trí
-            input(
-                name="position"
-                id="position"
-                type="number"
-                class="form-control"
-                placeholder="Tự động tăng"
-                min=0
-            ) 
-        div(class="form-group form-check form-check-inline")
-            input(
-                type="radio"
-                class="form-check-input"
-                id="statusActive"
-                value="active"
-                name="status"
-                checked
-            ) 
-            label(
-                for="statusActive"
-                class="form-check-label"
-            ) Hoạt động 
+        .form-group
+          label(for="product_category_id") --Danh mục --
+          select#product_category_id.form-control(name="product_category_id")
+            option(value="") Chọn danh mục
+            if category
+              +select-tree(category,1, (typeof product !== 'undefined' ? product.product_category_id : null))
 
-        div(class="form-group form-check form-check-inline")
-            input(
-                type="radio"
-                class="form-check-input"
-                id="statusInactive"
-                value="inactive"
-                name="status"
-            ) 
-            label(
-                for="statusInactive"
-                class="form-check-label"
-            )  Dừng Hoạt động 
-        
-        div(class="form-group")
-            button(
-                type="submit"
-                class=" btn btn-outline-primary"
-            ) Thêm mới
+        .form-group
+          label(for="description") Mô tả
+          textarea#description.form-control(name="description" rows="4") #{typeof product !== 'undefined' && product.description ? product.description : ''}
 
-        script(src="/admin/js/product.js")
+        .form-group
+          label(for="level") Trình độ
+          select#level.form-control(name="level")
+            option(value="") --Chọn--
+            option(value="A1" selected=(typeof product !== 'undefined' && product.level === 'A1')) A1
+            option(value="A2" selected=(typeof product !== 'undefined' && product.level === 'A2')) A2
+            option(value="B1" selected=(typeof product !== 'undefined' && product.level === 'B1')) B1
+            option(value="B2" selected=(typeof product !== 'undefined' && product.level === 'B2')) B2
+
+        .form-group
+          label(for="file") Chọn file audio
+          input#file.form-control-file(type="file" name="file" accept="audio/*" required)
+          small.form-text.text-muted Max 200MB; định dạng mp3, wav, ogg
+
+        .form-group
+          audio#previewAudio(controls style="width:100%; display:none")
+            source(src="" type="audio/mpeg")
+        .form-group
+          div#waveform(style="height:80px; display:none")
+
+        .form-group
+          label(for="transcript") Transcript (tùy chọn)
+          textarea#transcript.form-control(name="transcript" rows="6") #{typeof product !== 'undefined' && product.transcript ? product.transcript : ''}
+
+      .col-md-4
+        .card
+          .card-body
+            .form-group
+              label(for="thumbnail") Ảnh bìa
+              input#thumbnail.form-control-file(type="file" name="thumbnail" accept="image/*")
+              .mt-2
+              - var thumbSrc = (typeof product !== 'undefined' && product.thumbnail) ? product.thumbnail : '/images/default-thumb.png'
+              img#thumbPreview(src=thumbSrc style="width:100%; height:auto; display:block; border-radius:4px")
+
+            
+
+            .form-group
+              label(for="position") Vị trí
+              input#position.form-control(type="number" name="position" placeholder="Tự động tăng" min=0 value=(typeof product !== 'undefined' && product.position ? product.position : 0))
+
+            .form-group
+              label Trạng thái
+              .form-check
+                input.form-check-input(type="radio" name="status" id="statusActive" value="active" checked=(typeof product === 'undefined' || product.status === 'active'))
+                label.form-check-label(for="statusActive") Hoạt động
+              .form-check
+                input.form-check-input(type="radio" name="status" id="statusInactive" value="inactive" checked=(typeof product !== 'undefined' && product.status === 'inactive'))
+                label.form-check-label(for="statusInactive") Dừng Hoạt động
+
+            .form-group.mt-3
+              button.btn.btn-outline-primary(type="submit") Thêm mới
+              a.btn.btn-secondary.ml-2(href=`${prefixAdmin}/products`) Hủy
+
+  script(src="https://unpkg.com/wavesurfer.js")
+  script.
+    (function(){
+      const fileInput = document.getElementById('file');
+      const audioEl = document.getElementById('previewAudio');
+      const waveformEl = document.getElementById('waveform');
+      let wavesurfer = null;
+
+      if (fileInput) {
+        fileInput.addEventListener('change', function(e){
+          const file = e.target.files[0];
+          if (!file) {
+            if (audioEl) { audioEl.style.display = 'none'; audioEl.querySelector('source').src = ''; audioEl.load(); }
+            if (waveformEl) waveformEl.style.display = 'none';
+            if (wavesurfer) { wavesurfer.destroy(); wavesurfer = null; }
+            return;
+          }
+
+          const url = URL.createObjectURL(file);
+
+          if (audioEl) {
+            audioEl.style.display = 'block';
+            audioEl.querySelector('source').src = url;
+            audioEl.load();
+          }
+
+          if (waveformEl) {
+            waveformEl.style.display = 'block';
+            if (wavesurfer) { wavesurfer.destroy(); wavesurfer = null; }
+            try {
+              wavesurfer = WaveSurfer.create({
+                container: '#waveform',
+                waveColor: '#97c2ff',
+                progressColor: '#2b8cff',
+                height: 60,
+                responsive: true
+              });
+              wavesurfer.load(url);
+            } catch (err) {
+              console.warn('WaveSurfer init failed', err);
+            }
+          }
+        });
+      }
+
+      const thumbInput = document.getElementById('thumbnail');
+      const thumbPreview = document.getElementById('thumbPreview');
+      thumbInput && thumbInput.addEventListener('change', function(e){
+        const f = e.target.files[0];
+        if (!f) return;
+        const u = URL.createObjectURL(f);
+        thumbPreview.src = u;
+      });
+
+      const form = document.getElementById('form-create-product');
+      form && form.addEventListener('submit', function(e){
+        const title = document.getElementById('title').value.trim();
+        if (!title) { e.preventDefault(); alert('Vui lòng nhập tiêu đề'); return false; }
+        const file = document.getElementById('file').files[0];
+        if (!file) { e.preventDefault(); alert('Vui lòng chọn file audio'); return false; }
+      });
+    })();
+
+  script(src="/admin/js/product.js")

@@ -1,27 +1,705 @@
-extends ../../layouts/default.pug 
-include ../../layouts/mixins/box-head.pug
-block main 
- .container 
-  .row 
-   .col-12  
-    .box-head 
-     +box-head("Product lists")
+extends ../../layouts/default.pug
 
-  .row 
-   each item in products
-    .col-4
-     .product-item 
-      .inner-image 
-       img(
-         src=item.thumbnail
-         alt=item.title)
-      .inner-content 
-       h3.inner-title 
-         a(
-            href=`/products/${item.id}`
-            alt="Anh san pham"
-         ) #{item.title}
-       .inner-price-new #{item.priceNew} $
-       .inner-price-old #{item.price} $
-       .inner-discount -#{item.discountPercentage} %
+block main
+  style.
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600&display=swap');
 
+    :root {
+      --navy:   #2E1A6B;
+      --blue:   #4A35A8;
+      --sky:    #0078B4;
+      --teal:   #00A5A7;
+      --green:  #4CAF50;
+      --light:  #F7F6FB;
+      --border: #E2DDF5;
+      --text:   #1A1033;
+      --muted:  #6B6490;
+      --r:      18px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #fff; color: var(--text); -webkit-font-smoothing: antialiased; }
+
+    /* ── Hero ── */
+    .hero {
+      background-color: var(--navy);
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      padding: 60px 32px 64px;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Overlay nhẹ — giữ ảnh sắc nét, chữ vẫn đọc được */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        105deg,
+        rgba(20,10,50,0.60) 0%,
+        rgba(20,10,50,0.40) 45%,
+        rgba(20,10,50,0.15) 100%
+      );
+      pointer-events: none;
+    }
+    .hero__inner {
+      max-width: 1080px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 220px;
+      gap: 48px; align-items: center;
+      position: relative; z-index: 1;
+    }
+    .hero__eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+      text-transform: uppercase; color: rgba(255,255,255,0.50);
+      margin-bottom: 16px;
+    }
+    .hero__eyebrow span { display: inline-block; width: 24px; height: 1px; background: rgba(255,255,255,0.30); }
+    .hero__title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 5vw, 52px); font-weight: 700;
+      color: #fff; line-height: 1.15; margin-bottom: 18px; letter-spacing: -0.01em;
+    }
+    .hero__title em { font-style: italic; color: rgba(255,255,255,0.70); }
+    .hero__desc {
+      font-size: 15px; font-weight: 300;
+      color: rgba(255,255,255,0.62); line-height: 1.75;
+      max-width: 540px; margin-bottom: 32px;
+    }
+    .hero__levels { display: flex; gap: 10px; flex-wrap: wrap; }
+    .level-pill {
+      padding: 8px 20px; border-radius: 40px;
+      font-size: 14px; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 1.5px solid rgba(255,255,255,0.20);
+      color: rgba(255,255,255,0.80);
+      background: rgba(255,255,255,0.07);
+    }
+    .level-pill--active { background: #fff; color: var(--navy); border-color: #fff; }
+    .hero__cover {
+      width: 220px; height: 220px; border-radius: 20px;
+      object-fit: cover; box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+    }
+    .hero__cover-placeholder {
+      width: 220px; height: 220px; border-radius: 20px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Meta bar ── */
+    .meta-bar { background: var(--light); border-bottom: 1px solid var(--border); padding: 0 32px; }
+    .meta-bar__inner {
+      max-width: 1080px; margin: 0 auto; height: 48px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+    .breadcrumb a { color: var(--muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--blue); }
+    .breadcrumb__sep { opacity: 0.4; }
+    .breadcrumb__current { color: var(--navy); font-weight: 500; }
+    .meta-bar__count { font-size: 13px; color: var(--muted); }
+    .meta-bar__count strong { color: var(--navy); }
+
+    /* ── Page wrap ── */
+    .page-wrap { max-width: 1080px; margin: 0 auto; padding: 48px 32px 80px; }
+
+    /* ── Level filter bar ── */
+    .level-bar {
+      display: flex; align-items: center; gap: 10px;
+      flex-wrap: wrap; margin-bottom: 32px;
+    }
+    .level-bar__label {
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin-right: 4px;
+    }
+    .lvl-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 18px; border-radius: 30px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      border: 1.5px solid var(--border);
+      background: #fff; color: var(--muted);
+      text-decoration: none; cursor: pointer;
+      transition: all 0.20s;
+      white-space: nowrap;
+    }
+    .lvl-btn:hover {
+      border-color: var(--navy);
+      color: var(--navy);
+      background: rgba(46,26,107,0.04);
+    }
+    .lvl-btn.active {
+      background: var(--navy); color: #fff;
+      border-color: var(--navy);
+      box-shadow: 0 4px 16px rgba(46,26,107,0.25);
+    }
+    .lvl-btn__dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: currentColor; opacity: 0.6;
+    }
+    .lvl-btn__count {
+      font-size: 11px; font-weight: 500; opacity: 0.7;
+    }
+
+    /* result count line */
+    .result-info {
+      font-size: 13px; color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .result-info strong { color: var(--navy); }
+
+    /* ══ LIST SECTION ══════════════════════════════════ */
+
+    .pod-list {
+      display: flex; flex-direction: column; gap: 28px;
+      padding-top: 8px;
+    }
+
+    /* ── Card wrapper: offset layout ── */
+    .pod-card {
+      display: grid;
+      grid-template-columns: 68px 300px 1fr;
+      align-items: start;           /* key: start not stretch */
+      text-decoration: none; color: inherit;
+      position: relative;
+      background: transparent;
+    }
+
+    /* Glow ring on hover — pseudo behind card */
+    .pod-card::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, var(--navy), var(--blue), var(--teal));
+      opacity: 0;
+      transition: opacity 0.35s;
+      z-index: 0;
+    }
+    .pod-card:hover::before { opacity: 1; }
+
+    /* Inner card surface sits above the glow ring */
+    .pod-card__inner {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 68px 300px 1fr;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      overflow: visible;           /* allow thumb to overflow upward */
+      background: #fff;
+      position: relative; z-index: 1;
+      transition: box-shadow 0.35s, border-color 0.35s;
+    }
+    .pod-card:hover .pod-card__inner {
+      box-shadow: 0 20px 60px rgba(46,26,107,0.16);
+      border-color: transparent;
+    }
+
+    /* Left: EP number */
+    .pod-card__num {
+      width: 68px;
+      background: var(--light);
+      border-right: 1px solid var(--border);
+      border-radius: 22px 0 0 22px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 5px; padding: 24px 6px;
+      transition: background 0.35s;
+    }
+    .pod-card:hover .pod-card__num { background: rgba(46,26,107,0.06); }
+    .pod-card__num-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px; font-weight: 700;
+      color: var(--navy); line-height: 1;
+    }
+    .pod-card__num-label {
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .pod-card__num-line {
+      width: 20px; height: 2px;
+      background: linear-gradient(90deg, var(--navy), var(--blue));
+      border-radius: 2px; margin: 1px 0;
+    }
+
+    /* Centre: thumbnail — floats UP by 16px */
+    .pod-card__thumb-wrap {
+      margin-top: -16px;           /* ← lift image above card top */
+      margin-bottom: 16px;         /* ← maintain card height */
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 36px rgba(46,26,107,0.22);
+      transition: box-shadow 0.35s, transform 0.35s;
+    }
+    .pod-card:hover .pod-card__thumb-wrap {
+      box-shadow: 0 20px 48px rgba(46,26,107,0.32);
+      transform: translateY(-4px);
+    }
+    .pod-card__thumb-wrap img {
+      width: 100%; aspect-ratio: 4/3;
+      object-fit: cover; display: block;
+      transition: transform 0.50s ease;
+    }
+    .pod-card:hover .pod-card__thumb-wrap img { transform: scale(1.07); }
+    .pod-card__thumb-bg {
+      width: 100%; aspect-ratio: 4/3;
+      background: linear-gradient(160deg, var(--navy) 0%, var(--blue) 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Waveform bars at bottom of thumb */
+    .pod-card__wave {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 40px;
+      display: flex; align-items: flex-end; justify-content: center;
+      gap: 2px; padding: 0 14px 10px;
+      background: linear-gradient(to top, rgba(20,10,50,0.65), transparent);
+    }
+    .pod-card__wave span {
+      display: inline-block; width: 3px;
+      background: rgba(255,255,255,0.65); border-radius: 3px;
+      transition: height 0.4s ease;
+    }
+    .pod-card:hover .pod-card__wave span:nth-child(odd)  { height: 130% !important; }
+    .pod-card:hover .pod-card__wave span:nth-child(even) { height: 70%  !important; }
+
+    /* Play circle */
+    .pod-card__play {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(46,26,107,0); transition: background 0.30s;
+      border-radius: 16px;
+    }
+    .pod-card:hover .pod-card__play { background: rgba(46,26,107,0.30); }
+    .play-btn {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(255,255,255,0.96);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+      opacity: 0; transform: scale(0.70);
+      transition: opacity 0.28s, transform 0.28s;
+    }
+    .pod-card:hover .play-btn { opacity: 1; transform: scale(1); }
+
+    /* Right: body — drops DOWN by 16px to complement thumb lift */
+    .pod-card__body {
+      padding: 32px 32px 28px 28px;
+      margin-top: 16px;            /* ← drop body down */
+      display: flex; flex-direction: column; justify-content: space-between;
+      min-height: 200px;
+    }
+    .pod-card__top { flex: 1; }
+
+    /* Tags */
+    .pod-card__tags {
+      display: flex; align-items: center; gap: 8px;
+      flex-wrap: wrap; margin-bottom: 12px;
+    }
+    .tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 5px;
+    }
+    .tag--level {
+      background: rgba(46,26,107,0.08); color: var(--navy);
+      border: 1.5px solid rgba(46,26,107,0.18);
+      font-size: 13px; font-weight: 700;
+      padding: 5px 14px; border-radius: 7px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .tag--lang { background: #E6F3FA; color: var(--sky); }
+    .tag--type { background: #E6F5F5; color: var(--teal); }
+    .tag--free { background: #EDFBEE; color: #2E7D32; border: 1.5px solid #A5D6A7; }
+
+    /* Title + headphone icon */
+    .pod-card__title-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-bottom: 10px;
+    }
+    .pod-card__title {
+      font-family: 'Playfair Display', serif;
+      font-size: 21px; font-weight: 700;
+      color: var(--navy); line-height: 1.30;
+      letter-spacing: -0.01em;
+      transition: color 0.25s;
+      flex: 1;
+    }
+    .pod-card:hover .pod-card__title { color: var(--blue); }
+
+    /* Headphone icon badge */
+    .headphone-icon {
+      flex-shrink: 0;
+      margin-top: 3px;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: var(--light);
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.25s, border-color 0.25s, transform 0.25s;
+    }
+    .pod-card:hover .headphone-icon {
+      background: var(--navy);
+      border-color: var(--navy);
+      transform: rotate(-12deg) scale(1.1);
+    }
+    .pod-card:hover .headphone-icon svg { stroke: #fff; }
+
+    /* Description */
+    .pod-card__desc {
+      font-size: 13.5px; color: var(--muted);
+      line-height: 1.70;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .pod-card__desc p,
+    .pod-card__desc span { display: inline; margin: 0; padding: 0; }
+
+    /* Divider */
+    .pod-card__divider {
+      height: 1px;
+      background: linear-gradient(90deg, var(--border) 0%, transparent 100%);
+      margin: 18px 0;
+      transition: background 0.35s;
+    }
+    .pod-card:hover .pod-card__divider {
+      background: linear-gradient(90deg, rgba(74,53,168,0.25) 0%, transparent 100%);
+    }
+
+    /* Footer */
+    .pod-card__footer {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 12px;
+    }
+    .pod-card__stats { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .stat { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+    .stat svg { opacity: 0.65; }
+
+    /* Duration pill */
+    .dur-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 20px;
+      background: var(--light); border: 1px solid var(--border);
+      font-size: 12px; font-weight: 600; color: var(--navy);
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .pod-card:hover .dur-pill {
+      background: rgba(46,26,107,0.07);
+      border-color: rgba(46,26,107,0.20);
+    }
+
+    /* CTA button */
+    .cta-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 20px;
+      background: var(--navy); color: #fff;
+      border-radius: 10px; font-size: 13px; font-weight: 600;
+      border: 2px solid var(--navy);
+      transition: background 0.22s, color 0.22s, gap 0.22s, box-shadow 0.22s;
+      flex-shrink: 0; white-space: nowrap;
+    }
+    .cta-btn:hover {
+      background: transparent; color: var(--navy);
+      gap: 14px;
+      box-shadow: inset 0 0 0 2px var(--navy);
+    }
+
+    /* Price */
+    .price-wrap { text-align: right; }
+    .price-original { font-size: 11px; color: var(--muted); text-decoration: line-through; display: block; }
+    .price-new { font-size: 15px; font-weight: 700; color: var(--blue); }
+
+    /* Empty */
+    .empty { text-align: center; padding: 100px 24px; }
+    .empty__icon {
+      width: 80px; height: 80px; margin: 0 auto 20px; border-radius: 50%;
+      background: var(--light); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .empty h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--navy); margin-bottom: 10px; }
+    .empty p { font-size: 14px; color: var(--muted); }
+
+    /* Responsive */
+    @media (max-width: 860px) {
+      .hero__inner { grid-template-columns: 1fr; }
+      .hero__cover, .hero__cover-placeholder { display: none; }
+      .pod-card__inner { grid-template-columns: 1fr; border-radius: 16px; }
+      .pod-card__thumb-wrap { margin-top: 0; border-radius: 16px 16px 0 0; }
+      .pod-card__num { border-radius: 0; height: 44px; flex-direction: row; border-right: none; border-bottom: 1px solid var(--border); padding: 0 16px; }
+      .pod-card__body { margin-top: 0; }
+    }
+
+    @media (max-width: 640px) {
+      /* Hero */
+      .hero { padding: 36px 20px 40px; }
+      .hero__title { font-size: 28px; }
+      .hero__desc { font-size: 14px; margin-bottom: 20px; }
+      .hero__levels { gap: 8px; }
+      .level-pill { padding: 6px 14px; font-size: 12px; }
+
+      /* Meta bar */
+      .meta-bar { padding: 0 16px; }
+      .meta-bar__inner { height: 42px; }
+      .breadcrumb { font-size: 12px; gap: 4px; }
+
+      /* Page wrap */
+      .page-wrap { padding: 24px 16px 60px; }
+
+      /* Level filter bar */
+      .level-bar { gap: 8px; margin-bottom: 20px; }
+      .lvl-btn { padding: 6px 14px; font-size: 11px; }
+      .level-bar__label { display: none; }
+
+      /* Pod list */
+      .pod-list { gap: 16px; }
+
+      /* Card: stack hoàn toàn dọc */
+      .pod-card { display: block; }
+      .pod-card__inner {
+        display: flex; flex-direction: column;
+        border-radius: 14px; overflow: hidden;
+      }
+
+      /* EP number: thanh ngang trên đầu */
+      .pod-card__num {
+        width: 100%; height: 38px;
+        flex-direction: row; gap: 8px;
+        border-radius: 0; border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 0 14px; justify-content: flex-start;
+      }
+      .pod-card__num-line { width: 16px; margin: 0; }
+      .pod-card__num-val { font-size: 18px; }
+      .pod-card__num-label { font-size: 9px; }
+
+      /* Thumbnail: full width, không float */
+      .pod-card__thumb-wrap {
+        margin-top: 0; margin-bottom: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .pod-card__thumb-wrap img { aspect-ratio: 16/9; }
+      .pod-card__thumb-bg { aspect-ratio: 16/9; }
+
+      /* Body */
+      .pod-card__body {
+        margin-top: 0; padding: 16px;
+        min-height: unset; gap: 0;
+      }
+      .pod-card__title { font-size: 16px; }
+      .pod-card__desc { -webkit-line-clamp: 2; font-size: 13px; }
+      .pod-card__divider { margin: 12px 0; }
+      .pod-card__tags { gap: 6px; margin-bottom: 8px; }
+      .tag--level { font-size: 11px; padding: 4px 10px; }
+
+      /* Footer trong card */
+      .pod-card__footer { flex-wrap: wrap; gap: 8px; }
+      .pod-card__stats { gap: 8px; }
+      .cta-btn { padding: 8px 14px; font-size: 12px; }
+      .dur-pill { font-size: 11px; padding: 3px 10px; }
+
+      /* Headphone icon ẩn trên mobile */
+      .headphone-icon { display: none; }
+
+      /* Glow ring ẩn trên mobile (performance) */
+      .pod-card::before { display: none; }
+
+      /* Empty state */
+      .empty { padding: 60px 16px; }
+      .empty h3 { font-size: 18px; }
+    }
+
+    /* Animation */
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .pod-card { animation: slideUp 0.45s ease both; }
+
+  //- ── HERO
+  section.hero(style=heroBg ? 'background-image: url(' + heroBg + ')' : '')
+    .hero__inner
+      div
+        p.hero__eyebrow
+          span
+          | Audio Series
+        h1.hero__title
+          if category
+            | #{category.title}
+          else
+            | #{pageTitle}
+        p.hero__desc
+          if category && category.description
+            | #{category.description}
+          else
+            | Luyện nghe tiếng Anh mỗi ngày qua những podcast chọn lọc. Mỗi episode kèm transcript và bài tập tương tác.
+        .hero__levels
+          span.level-pill.level-pill--active A2 — Pre-intermediate
+          span.level-pill B1 — Intermediate
+          if products && products.length
+            span.level-pill #{products.length} Episodes
+
+      if category && category.thumbnail
+        img.hero__cover(src=category.thumbnail alt=category.title)
+      else
+        .hero__cover-placeholder
+          svg(width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='1' stroke-linecap='round')
+            path(d='M9 18V5l12-2v13')
+            circle(cx='6' cy='18' r='3')
+            circle(cx='18' cy='16' r='3')
+
+  //- ── META BAR
+  .meta-bar
+    .meta-bar__inner
+      nav.breadcrumb
+        a(href='/') Trang chủ
+        span.breadcrumb__sep /
+        a(href='/products') Podcasts
+        if category
+          span.breadcrumb__sep /
+          span.breadcrumb__current #{category.title}
+      if products && products.length
+        p.meta-bar__count
+          strong #{products.length}
+          |  episodes
+
+  //- ── LIST
+  .page-wrap
+    //- ── Level filter bar
+    if levels && levels.length > 0
+      .level-bar
+        span.level-bar__label Trình độ
+        a.lvl-btn(
+          href=`/products/category/${category ? category.slug : ''}` 
+          class=(!currentLevel ? 'active' : '')
+        )
+          span.lvl-btn__dot
+          | Tất cả
+          span.lvl-btn__count (#{totalCount})
+        each lv in levels
+          a.lvl-btn(
+            href=`/products/category/${category ? category.slug : ''}?level=${lv.value}`
+            class=(currentLevel === lv.value ? 'active' : '')
+          )
+            span.lvl-btn__dot
+            | #{lv.value}
+            span.lvl-btn__count (#{lv.count})
+
+    //- ── Result info
+    if currentLevel
+      p.result-info
+        | Đang lọc:&nbsp;
+        strong #{currentLevel}
+        |  &nbsp;·&nbsp; #{products.length} kết quả
+
+    if products && products.length > 0
+      .pod-list
+        - let idx = 0
+        each product in products
+          - let delay = idx++ * 0.07
+          - let epNum = product.episodeNumber || idx
+          a.pod-card(href=`/products/detail/${product.slug}` style=`animation-delay:${delay}s`)
+            .pod-card__inner
+
+              //- Col 1: EP number
+              .pod-card__num
+                span.pod-card__num-label EP
+                .pod-card__num-line
+                span.pod-card__num-val= epNum
+
+              //- Col 2: Thumbnail (floats UP)
+              .pod-card__thumb-wrap
+                if product.thumbnail
+                  img(src=product.thumbnail alt=product.title loading='lazy')
+                else
+                  .pod-card__thumb-bg
+                    svg(width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.28)' stroke-width='1' stroke-linecap='round')
+                      path(d='M9 18V5l12-2v13')
+                      circle(cx='6' cy='18' r='3')
+                      circle(cx='18' cy='16' r='3')
+
+                //- Animated waveform
+                .pod-card__wave
+                  each h in [10,18,24,14,20,28,16,22,12,26,18,10,24,20,14]
+                    span(style=`height:${h}px`)
+
+                //- Play overlay
+                .pod-card__play
+                  .play-btn
+                    svg(width='18' height='18' viewBox='0 0 24 24')
+                      polygon(points='5 3 19 12 5 21 5 3' fill='#2E1A6B')
+
+              //- Col 3: Body (drops DOWN)
+              .pod-card__body
+                .pod-card__top
+                  .pod-card__tags
+                    if product.level
+                      span.tag.tag--level #{product.level}
+                    if product.language
+                      span.tag.tag--lang
+                        svg(width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2')
+                          circle(cx='12' cy='12' r='10')
+                          line(x1='2' y1='12' x2='22' y2='12')
+                          path(d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z')
+                        | #{product.language.toUpperCase()}
+                    if product.type && product.type !== 'product'
+                      span.tag.tag--type #{product.type}
+                    if !product.price || product.price === 0
+                      span.tag.tag--free FREE
+
+                  //- Title + headphone icon
+                  .pod-card__title-row
+                    h3.pod-card__title #{product.title}
+                    span.headphone-icon
+                      svg(width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#2E1A6B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round')
+                        path(d='M3 18v-6a9 9 0 0 1 18 0v6')
+                        path(d='M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z')
+
+                  if product.description
+                    .pod-card__desc !{product.description}
+
+                .pod-card__divider
+
+                .pod-card__footer
+                  .pod-card__stats
+                    if product.duration
+                      span.dur-pill
+                        svg(width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2')
+                          circle(cx='12' cy='12' r='10')
+                          polyline(points='12 6 12 12 16 14')
+                        | #{Math.floor(product.duration / 60)} phút
+                    if product.playCount
+                      .stat
+                        svg(width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2')
+                          path(d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z')
+                          circle(cx='12' cy='12' r='3')
+                        span #{product.playCount.toLocaleString()}
+                    if product.downloadCount
+                      .stat
+                        svg(width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2')
+                          path(d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4')
+                          polyline(points='7 10 12 15 17 10')
+                          line(x1='12' y1='15' x2='12' y2='3')
+                        span #{product.downloadCount}
+
+                  if product.priceNew && product.priceNew > 0
+                    .price-wrap
+                      if product.discountPercentage > 0
+                        span.price-original #{product.price.toLocaleString('vi-VN')}₫
+                      span.price-new #{product.priceNew.toLocaleString('vi-VN')}₫
+                  else
+                    span.cta-btn
+                      svg(width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round')
+                        polygon(points='5 3 19 12 5 21 5 3')
+                      | Nghe ngay
+
+    else
+      .empty
+        .empty__icon
+          svg(width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='#6B6490' stroke-width='1.5')
+            path(d='M9 18V5l12-2v13')
+            circle(cx='6' cy='18' r='3')
+            circle(cx='18' cy='16' r='3')
+        h3 Chưa có episode nào
+        p Danh mục này chưa có nội dung. Quay lại sau nhé!

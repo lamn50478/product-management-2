@@ -1,15 +1,58 @@
+/* =========================
+   Admin CSS - Integrated
+   (Giữ nguyên selectors gốc, nâng cấp giao diện)
+   ========================= */
+
+/* Theme variables */
+:root{
+  --header-bg: #0b0f14;            /* deep black-blue */
+  --header-text: #ffffff;
+  --sider-bg: #363434;             /* giữ tông cũ làm nền chính */
+  --sider-bg-2: #2b2a2a;
+  --sider-accent: #06b6d4;         /* teal accent */
+  --sider-text: #ffffff;
+  --sider-divider: rgba(255,255,255,0.06);
+  --main-bg: #f5f7fa;
+  --muted: #9aa4ad;
+  --card-shadow: 0 10px 30px rgba(2,6,23,0.08);
+  --radius: 10px;
+  --transition: 200ms cubic-bezier(.2,.9,.3,1);
+  --sider-width: 180px;
+  --sider-collapsed-width: 72px;
+}
+
+/* -------------------------
+   Preserve original rules (kept and improved)
+   ------------------------- */
 .header{
     background-color: black;
     padding:10px 0;
     position: sticky;
     z-index: 100; 
     top:0;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding-left:18px;
+    padding-right:18px;
+    box-shadow: 0 2px 6px rgba(2,6,23,0.25);
 }
 .header .inner-logo a{
     color:#fff;
     font-size:24px;
     font-weight:700;
+    text-decoration:none;
+    letter-spacing:0.2px;
 }
+
+/* improved header small elements */
+.header .inner-logo a:hover,
+.header .inner-logo a:focus{
+  opacity:0.95;
+  outline:none;
+}
+
+/* Sider - keep selector but modernize */
 .body .sider{
     background-color: rgb(54, 52, 52);
     color:#fff;
@@ -18,31 +61,100 @@
     width:150px;
     left:0;
     height:calc(100vh - 54px);
-
+    padding:14px 8px;
+    overflow:auto;
+    transition: width var(--transition), transform var(--transition), background-color var(--transition);
+    box-shadow: var(--card-shadow);
+    border-right: 1px solid rgba(255,255,255,0.03);
+    -webkit-overflow-scrolling: touch;
 }
+
+/* collapsed sider support (toggle class via JS) */
+.body .sider.sider--collapsed{
+  width: var(--sider-collapsed-width);
+}
+
+/* Main area - keep selector but adjust layout */
 .body .main {
     position: relative;
     left:150px;
     width:calc(100% - 180px);
     margin:15px;
+    transition: margin-left var(--transition), width var(--transition);
+    min-height: calc(100vh - 80px);
+    background: transparent;
 }
+
+/* When sider collapsed, adjust main */
+.body .sider.sider--collapsed ~ .main,
+.body .sider.sider--collapsed + .main{
+  left: var(--sider-collapsed-width);
+  width: calc(100% - var(--sider-collapsed-width) - 30px);
+  margin-left: calc(var(--sider-collapsed-width) + 15px);
+}
+
+/* Menu list - preserve structure, improve spacing & accessibility */
 .body .sider .inner-menu ul{
     list-style-type:none;
     padding:0;
     margin:0;
-    
+}
+.body .sider .inner-menu ul li{
+    margin:4px 0;
 }
 .body .sider .inner-menu ul li a{
     color:#fff;
     font-size: 15px;
     display:block;
-    border-bottom:1px solid bisque;
-    padding:6px 9px;
+    border-bottom:1px solid rgba(255,255,255,0.04);
+    padding:10px 12px;
+    border-radius:8px;
+    text-decoration:none;
+    transition: background var(--transition), color var(--transition), transform var(--transition);
+    display:flex;
+    align-items:center;
+    gap:8px;
 }
+
+/* Hover / focus / active states */
+.body .sider .inner-menu ul li a:hover,
+.body .sider .inner-menu ul li a:focus{
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    transform: translateX(4px);
+    outline: none;
+    color: var(--sider-accent);
+}
+.body .sider .inner-menu ul li a.active{
+    background: linear-gradient(90deg, rgba(6,182,212,0.08), rgba(6,182,212,0.03));
+    color: var(--sider-accent);
+    font-weight:600;
+    box-shadow: inset 3px 0 0 var(--sider-accent);
+}
+
+/* icon and label helpers */
+.body .sider .inner-menu ul li a .menu-icon{
+  width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;
+  opacity:0.95;
+}
+.body .sider .inner-menu ul li a .menu-label{
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* collapsed: show only icons */
+.body .sider.sider--collapsed .inner-menu ul li a .menu-label{
+  display:none;
+}
+.body .sider.sider--collapsed .inner-menu ul li a{
+  justify-content:center;padding:10px;
+}
+
+/* Table image - keep but modernize sizes */
 table .inner-image{
     aspect-ratio: 1/1;
     height:100px;
     overflow:hidden;
+    border-radius:8px;
+    border:1px solid rgba(0,0,0,0.04);
 }
 table .inner-image img{
    object-fit:cover;
@@ -50,14 +162,15 @@ table .inner-image img{
    width:100px;
    display:block;
    margin:0 auto;
-   
 }
-/* show-alert */
+
+/* show-alert (preserve behavior, improve visuals) */
 div[show-alert]{
     position:fixed;
     top:70px;
     right:15px;
     z-index:9999;
+    min-width:260px;
 }
 div[show-alert].alert-hidden{
     animation-name:alert-hidden;
@@ -67,9 +180,11 @@ div[show-alert].alert-hidden{
 @keyframes alert-hidden{
     from{
          right:15px;
+         opacity:1;
     }
     to{
       right:-100%;
+      opacity:0;
       display:none;
     }
 }
@@ -83,16 +198,19 @@ div[show-alert] [close-alert]{
     cursor:pointer;
     display:inline-block;
     font-weight:600;
-    
+    color:#111;
+    box-shadow:0 2px 6px rgba(2,6,23,0.08);
 }
-/*end show-alert */
-/* image-preview */
+
+/* end show-alert */
+
+/* image-preview (preserve selectors, improve look) */
 .image-container {
   position: relative;
   display: inline-block;
   max-width: 300px;
+  border-radius:8px;
 }
-
 img[upload-image-preview] {
   display: block;
   width: 100%;
@@ -100,6 +218,7 @@ img[upload-image-preview] {
   border-radius: 8px;
   margin-top:3px;
   border:1px solid #ddd;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.06);
 }
 img[upload-image-preview][src=""] {
   display: none;
@@ -110,44 +229,44 @@ img[upload-image-preview][src=""] {
   right: 8px;
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
-  padding: 4px 8px;
+  padding: 6px 8px;
   border-radius: 50%;
   font-weight: bold;
   cursor: pointer;
   font-size: 14px;
   line-height: 1;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform var(--transition);
 }
-
+.close-image:hover{transform:scale(1.05)}
 
 /* end image-preview */
 
-
-/* detail */
-
+/* detail (product card) - keep but refine */
 .product-card {
   background: linear-gradient(145deg, #ffffff, #f0f0f0);
   border-radius: 20px;
   padding: 32px;
   box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-  max-width: 600px;
+  max-width: 760px;
   margin: 40px auto;
   font-family: 'Poppins', sans-serif;
-  transition: all 0.4s ease;
+  transition: all 0.4s ease, transform var(--transition);
+  border: 1px solid rgba(2,6,23,0.04);
 }
+.product-card:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(2,6,23,0.12); }
 
 .card-title {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 600;
   color: #2c3e50;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
 .image-wrapper {
   display: flex;
   justify-content: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .thumbnail {
@@ -157,19 +276,19 @@ img[upload-image-preview][src=""] {
   transition: transform 0.3s ease;
 }
 .thumbnail:hover {
-  transform: scale(1.08);
+  transform: scale(1.06);
 }
 
 .info-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
 .info-item {
-  font-size: 18px;
+  font-size: 16px;
   color: #34495e;
 }
 
@@ -188,8 +307,8 @@ img[upload-image-preview][src=""] {
 
 .status-row {
   text-align: center;
-  font-size: 16px;
-  margin-bottom: 16px;
+  font-size: 15px;
+  margin-bottom: 14px;
 }
 
 .badge-success, .badge-danger {
@@ -208,20 +327,55 @@ img[upload-image-preview][src=""] {
 }
 
 .description {
-  font-size: 16px;
+  font-size: 15px;
   color: #4c5050;
   text-align: center;
   margin-top: 12px;
 }
 
+/* fade-in animation (preserve) */
 .fade-in {
   animation: fadeIn 0.8s ease-in-out;
 }
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Accessibility: focus outlines for keyboard users */
+a:focus, button:focus, input:focus{
+  outline: 3px solid rgba(6,182,212,0.14);
+  outline-offset: 2px;
+}
 
-/* end detail */
+/* Responsive adjustments */
+@media (max-width: 1000px){
+  .body .sider{ width:160px }
+  .body .main{ left:160px; width:calc(100% - 190px) }
+}
+@media (max-width: 720px){
+  .body .sider{
+    position:relative;
+    top:0;
+    width:100%;
+    height:auto;
+    left:0;
+    display:flex;
+    flex-wrap:wrap;
+    padding:10px;
+  }
+  .body .main{
+    left:0;
+    width:100%;
+    margin:12px;
+  }
+  .body .sider .inner-menu ul li a{ padding:10px; font-size:14px }
+  table .inner-image{ height:80px }
+  .product-card{ margin:18px; padding:18px }
+}
+
+/* Utility helpers (optional) */
+.hidden{ display:none !important }
+.text-muted{ color:var(--muted) }
+
+/* End of integrated CSS */

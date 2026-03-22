@@ -1,145 +1,319 @@
-extends ../../layouts/default.pug 
+//- extends ../../layouts/default.pug 
+//- include ../../mixins/alert.pug
+//- include ../../mixins/select-tree.pug
+//- block main 
+//-     +alert-success(5000) 
+//-     +alert-error(5000) 
+//-     h1(class="mb-4") Chỉnh sửa sản phẩm 
+//-     form(
+//-         action=`${prefixAdmin}/products/edit/${product.id}?_method=PATCH`
+//-         id="form-create-product"
+//-         method="POST" 
+//-         enctype="multipart/form-data"
+//-     )
+//-         div(class="form-group")
+//-             label(for="title") Tiêu đề
+//-             input(
+//-                 name="title"
+//-                 id="title"
+//-                 type="text"
+//-                 class="form-control"
+//-                 value=product.title
+               
+//-             ) 
+//-         div(class="form-group")
+//-         label(for="product_category_id") --Danh mục --
+//-         select(
+//-             id="product_category_id" 
+//-             class="form-control"
+//-             name="product_category_id"
+//-         )
+//-             option(value="") Chọn danh mục 
+//-             if(category) 
+//-                 +select-tree(category,1,product.product_category_id) 
+//-         div(class="form-group")
+//-             label(for="desc") Mô tả
+//-             textarea(
+//-                 name="description"
+//-                 id="desc"
+//-                 type="text"
+//-                 class="form-control tiny_mce"
+//-             ) #{product.description}
+//-         div(class="form-group")
+//-             label(for="price") Giá 
+//-             input(
+//-                 name="price"
+//-                 id="price"
+//-                 type="number"
+//-                 class="form-control"
+//-                 min=0
+//-                 value=product.price
+//-                 step="any"
+                
+//-             ) 
+//-         div(class="form-group")
+//-             label(for="discount") % giảm giá 
+//-             input(
+//-                 name="discountPercentage"
+//-                 id="discount"
+//-                 type="number"
+//-                 class="form-control"
+//-                 min=0
+//-                 value=product.discountPercentage
+//-                 step="any"
+                
+//-             ) 
+
+//-         div(class="form-group")
+//-             label(for="stock") Số lượng
+//-             input(
+//-                 name="stock"
+//-                 id="stock"
+//-                 type="number"
+//-                 class="form-control"
+//-                 min=0
+//-                 value=product.stock
+                
+//-             ) 
+
+//-         div(
+//-             class="form-group"
+//-             upload-image
+//-             )
+//-             label(for="thumbnail") Ảnh
+//-             input(
+//-                 name="thumbnail"
+//-                 id="thumbnail"
+//-                 type="file"
+//-                 class="form-control-file"
+//-                 accept="image/*"
+//-                 upload-image-input
+//-             ) 
+//-             div(class="image-container")
+//-                 img(
+//-                     src=product.thumbnail
+//-                     upload-image-preview
+//-                 ) 
+//-                 span(class="close-image" style="display:none") x
+
+//-         div(class="form-group")
+//-             label(for="position") Vị trí
+//-             input(
+//-                 name="position"
+//-                 id="position"
+//-                 type="number"
+//-                 class="form-control"
+//-                 placeholder="Tự động tăng"
+//-                 min=0
+//-                 value=product.position
+//-             ) 
+//-         div(class="form-group form-check form-check-inline")
+//-             input(
+//-                 type="radio"
+//-                 class="form-check-input"
+//-                 id="statusActive"
+//-                 value="active"
+//-                 name="status"
+//-                 checked=(product.status=="active"?true:false)
+//-             ) 
+//-             label(
+//-                 for="statusActive"
+//-                 class="form-check-label"
+//-             ) Hoạt động 
+
+//-         div(class="form-group form-check form-check-inline")
+//-             input(
+//-                 type="radio"
+//-                 class="form-check-input"
+//-                 id="statusInactive"
+//-                 value="inactive"
+//-                 name="status"
+//-                 checked=(product.status=="inactive"?true:false)
+//-             ) 
+//-             label(
+//-                 for="statusInactive"
+//-                 class="form-check-label"
+//-             )  Dừng Hoạt động 
+        
+//-         div(class="form-group")
+//-             button(
+//-                 type="submit"
+//-                 class=" btn btn-outline-primary"
+//-             ) Cập nhật
+
+//-     script(src="/admin/js/product.js")
+extends ../../layouts/default.pug
 include ../../mixins/alert.pug
 include ../../mixins/select-tree.pug
-block main 
-    +alert-success(5000) 
-    +alert-error(5000) 
-    h1(class="mb-4") Chỉnh sửa sản phẩm 
-    form(
-        action=`${prefixAdmin}/products/edit/${product.id}?_method=PATCH`
-        id="form-create-product"
-        method="POST" 
-        enctype="multipart/form-data"
-    )
-        div(class="form-group")
-            label(for="title") Tiêu đề
-            input(
-                name="title"
-                id="title"
-                type="text"
-                class="form-control"
-                value=product.title
-               
-            ) 
-        div(class="form-group")
-        label(for="product_category_id") --Danh mục --
-        select(
-            id="product_category_id" 
-            class="form-control"
-            name="product_category_id"
-        )
-            option(value="") Chọn danh mục 
-            if(category) 
-                +select-tree(category,1,product.product_category_id) 
-        div(class="form-group")
-            label(for="desc") Mô tả
-            textarea(
-                name="description"
-                id="desc"
-                type="text"
-                class="form-control tiny_mce"
-            ) #{product.description}
-        div(class="form-group")
-            label(for="price") Giá 
-            input(
-                name="price"
-                id="price"
-                type="number"
-                class="form-control"
-                min=0
-                value=product.price
-                step="any"
-                
-            ) 
-        div(class="form-group")
-            label(for="discount") % giảm giá 
-            input(
-                name="discountPercentage"
-                id="discount"
-                type="number"
-                class="form-control"
-                min=0
-                value=product.discountPercentage
-                step="any"
-                
-            ) 
 
-        div(class="form-group")
-            label(for="stock") Số lượng
-            input(
-                name="stock"
-                id="stock"
-                type="number"
-                class="form-control"
-                min=0
-                value=product.stock
-                
-            ) 
+block main
+  +alert-success(5000)
+  +alert-error(5000)
 
-        div(
-            class="form-group"
-            upload-image
-            )
-            label(for="thumbnail") Ảnh
-            input(
-                name="thumbnail"
-                id="thumbnail"
-                type="file"
-                class="form-control-file"
-                accept="image/*"
-                upload-image-input
-            ) 
-            div(class="image-container")
-                img(
-                    src=product.thumbnail
-                    upload-image-preview
-                ) 
-                span(class="close-image" style="display:none") x
+  h1(class="mb-4") Chỉnh sửa sản phẩm
 
-        div(class="form-group")
-            label(for="position") Vị trí
-            input(
-                name="position"
-                id="position"
-                type="number"
-                class="form-control"
-                placeholder="Tự động tăng"
-                min=0
-                value=product.position
-            ) 
-        div(class="form-group form-check form-check-inline")
-            input(
-                type="radio"
-                class="form-check-input"
-                id="statusActive"
-                value="active"
-                name="status"
-                checked=(product.status=="active"?true:false)
-            ) 
-            label(
-                for="statusActive"
-                class="form-check-label"
-            ) Hoạt động 
+  form(
+    action=`${prefixAdmin}/products/edit/${product._id}?_method=PATCH`
+    id="form-edit-product"
+    method="POST"
+    enctype="multipart/form-data"
+  )
+    // basic fields
+    .form-group
+      label(for="title") Tiêu đề
+      input(
+        name="title"
+        id="title"
+        type="text"
+        class="form-control"
+        value=product.title
+      )
 
-        div(class="form-group form-check form-check-inline")
-            input(
-                type="radio"
-                class="form-check-input"
-                id="statusInactive"
-                value="inactive"
-                name="status"
-                checked=(product.status=="inactive"?true:false)
-            ) 
-            label(
-                for="statusInactive"
-                class="form-check-label"
-            )  Dừng Hoạt động 
-        
-        div(class="form-group")
-            button(
-                type="submit"
-                class=" btn btn-outline-primary"
-            ) Cập nhật
+    .form-group
+      label(for="product_category_id") --Danh mục --
+      select(
+        id="product_category_id"
+        class="form-control"
+        name="product_category_id"
+      )
+        option(value="") Chọn danh mục
+        if category
+          +select-tree(category,1,product.product_category_id)
 
-    script(src="/admin/js/product.js")
-       
+    .form-group
+      label(for="desc") Mô tả
+      textarea(
+        name="description"
+        id="desc"
+        class="form-control tiny_mce"
+      ) #{product.description}
+
+    // Level select (A1, A2, B1, B2)
+    .form-group
+      label(for="level") Level
+      select.form-control(name="level" id="level")
+        option(value="") Chọn level
+        option(value="a1" selected=(product.level=='a1'?true:false)) A1
+        option(value="a2" selected=(product.level=='a2'?true:false)) A2
+        option(value="b1" selected=(product.level=='b1'?true:false)) B1
+        option(value="b2" selected=(product.level=='b2'?true:false)) B2
+
+    // Số lượng
+    .form-group
+      label(for="stock") Số lượng
+      input(
+        name="stock"
+        id="stock"
+        type="number"
+        class="form-control"
+        min=0
+        value=product.stock
+      )
+
+    // thumbnail upload (existing behavior)
+    .form-group(upload-image)
+      label(for="thumbnail") Ảnh
+      input(
+        name="thumbnail"
+        id="thumbnail"
+        type="file"
+        class="form-control-file"
+        accept="image/*"
+        upload-image-input
+      )
+      .image-container
+        if product.thumbnail
+          img(src=product.thumbnail upload-image-preview)
+          span.close-image(style="display:inline-block; cursor:pointer; margin-left:8px") x
+        else
+          img(src="/images/default-thumb.png" upload-image-preview)
+
+    // audio upload + existing audio preview + waveform
+    .form-group
+      label(for="file") Audio (MP3, WAV, OGG)
+      input(
+        name="file"
+        id="file"
+        type="file"
+        class="form-control-file"
+        accept="audio/*"
+      )
+      if product && product.audioUrl
+        p.mt-2.mb-1
+          strong Hiện có audio:
+        audio(controls src=product.audioUrl style="width:100%; max-width:480px; display:block; margin-bottom:8px")
+          | Your browser does not support the audio element.
+        #waveform(style="width:100%; height:120px; margin-bottom:8px;")
+        .subtitle-overlay(id="subtitleOverlay" style="min-height:40px; margin-bottom:8px;")
+
+    .form-group
+      label(for="position") Vị trí
+      input(
+        name="position"
+        id="position"
+        type="number"
+        class="form-control"
+        placeholder="Tự động tăng"
+        min=0
+        value=product.position
+      )
+
+    .form-group.form-check.form-check-inline
+      input(
+        type="radio"
+        class="form-check-input"
+        id="statusActive"
+        value="active"
+        name="status"
+        checked=(product.status=="active"?true:false)
+      )
+      label(for="statusActive" class="form-check-label") Hoạt động
+
+    .form-group.form-check.form-check-inline
+      input(
+        type="radio"
+        class="form-check-input"
+        id="statusInactive"
+        value="inactive"
+        name="status"
+        checked=(product.status=="inactive"?true:false)
+      )
+      label(for="statusInactive" class="form-check-label") Dừng Hoạt động
+
+    .form-group.mt-4
+      button(type="submit" class="btn btn-outline-primary") Cập nhật
+      a.btn.btn-light(href=`${prefixAdmin}/products`) Hủy
+
+  // include Wavesurfer lib (kept for waveform preview)
+  script(src="https://unpkg.com/wavesurfer.js@6.1.0/dist/wavesurfer.min.js")
+
+  // Minimal client script: initialize waveform if audio exists
+  script.
+    (function(){
+      const audioUrl = !{JSON.stringify(product && product.audioUrl ? product.audioUrl : null)};
+      const subtitleOverlay = document.getElementById('subtitleOverlay');
+
+      if (!audioUrl) return;
+
+      try {
+        const ws = WaveSurfer.create({
+          container: '#waveform',
+          backend: 'WebAudio',
+          waveColor: '#dbeafe',
+          progressColor: '#0ea5e9',
+          cursorColor: '#0f172a',
+          height: 100,
+          barWidth: 2,
+          normalize: true,
+          responsive: true
+        });
+        ws.load(audioUrl);
+
+        ws.on('ready', function(){});
+        ws.on('play', function(){});
+        ws.on('pause', function(){});
+      } catch (e) {
+        console.warn('WaveSurfer create error:', e);
+      }
+    })();
+

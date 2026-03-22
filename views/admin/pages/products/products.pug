@@ -1,127 +1,446 @@
-extends ../../layouts/default.pug 
+//- extends ../../layouts/default.pug 
+//- include ../../mixins/fillter-status.pug
+//- include ../../mixins/search.pug
+//- include ../../mixins/pagination.pug 
+//- include ../../mixins/form-change-multi.pug 
+//- include ../../mixins/alert.pug 
+//- include ../../mixins/sort.pug 
+
+
+//- block main 
+//-   +alert-success(5000) 
+//-   +alert-error(5000) 
+//-   h1 Trang danh sach san pham ne
+ 
+//-   .card-header Bo loc va tim kiem 
+//-     .card-body 
+//-       .row 
+//-         .col-6 
+//-           +fillterStatus(fillterStatus)
+//-         .col-6 
+//-           +search(keyword)
+
+//-   .card.mb-3 
+//-     .card-header Sắp xếp 
+//-     .card-body 
+//-       .row 
+//-         .col-4 
+//-           +sort()
+
+//-   .card.mb-3 
+//-     .card-header Danh sach
+//-     .card-body 
+//-       .row
+//-         .col-8
+//-           +form-change-multi(`${prefixAdmin}/products/change-multi?_method=PATCH`)
+//-         .col-4 
+//-           a(
+//-             href=`${prefixAdmin}/products/create`
+//-             class="btn btn-outline-success"
+//-           ) + Thêm mới 
+          
+//-       table(
+//-         class="table table-hover table-sm "
+//-         checkbox-multi
+//-       )
+//-         thead 
+//-           tr 
+//-             th 
+//-               input(type="checkbox" name="checkall")
+//-             th STT 
+//-             th Image 
+//-             th Title 
+//-             th Price 
+//-              th Position
+//-             th Status 
+//-             th Action 
+
+//-         tbody 
+//-           each item, index in products
+//-             tr 
+//-               td 
+//-                 input(type="checkbox" name="id" value=item.id)
+//-               td #{pagination.limitPages*(pagination.currentPage-1)+(index+1)}
+//-               td 
+//-                 .inner-image 
+//-                   img(
+//-                     src=item.thumbnail
+//-                     alt=item.title
+//-                     style="width: 100px; height:auto"
+//-                   )
+//-               td #{item.title}
+//-               td #{item.price}$
+//-               td 
+//-                 input(
+//-                   type="number",
+//-                   style="width:60px",
+//-                   min=1,
+//-                   value=item.position,
+//-                   name='position'
+
+//-                 )
+//-               td 
+//-                 if item.status == "active"
+//-                   a(
+//-                     data-status=item.status
+//-                     data-id=item._id
+//-                     button-change-status
+//-                     href=`javascript:;`
+//-                     class="badge badge-success") Hoat dong 
+//-                 else 
+//-                   a(
+//-                     data-status=item.status
+//-                     data-id=item._id
+//-                     button-change-status
+//-                     href=`javascript:;`
+//-                     class="badge badge-danger") Khong Hoat dong 
+//-               td 
+//-                 a(
+//-                     class="btn btn-secondary btn-sm"
+//-                     href=`${prefixAdmin}/products/detail/${item.id}`
+//-                     ) Chi tiết 
+//-                 a(
+//-                   class="btn btn-warning btn-sm ml-1"
+//-                   href=`${prefixAdmin}/products/edit/${item.id}`
+//-                   ) Sửa
+//-                 button(
+//-                   class="btn btn-danger btn-sm ml-1"
+//-                   button-delete 
+//-                   data-id=item.id
+//-                   ) Xóa
+
+//-   +pagination(pagination)
+//-   form(
+//-     action=""
+//-     data-path=`${prefixAdmin}/products/change-status`
+//-     id="form-change-status"
+//-     method="POST") 
+
+//-   form(
+//-     action=""
+//-     data-path=`${prefixAdmin}/products/delete-product`
+//-     id="form-delete-product"
+//-     method="POST") 
+
+
+
+//-   <script src="/admin/js/product.js"></script>
+//----------------------------------------------------------
+
+
+//- extends ../../layouts/default.pug
+//- include ../../mixins/fillter-status.pug
+//- include ../../mixins/search.pug
+//- include ../../mixins/pagination.pug
+//- include ../../mixins/form-change-multi.pug
+//- include ../../mixins/alert.pug
+//- include ../../mixins/sort.pug
+
+//- block main
+//-   +alert-success(5000)
+//-   +alert-error(5000)
+//-   h1 Trang danh sách sản phẩm
+
+//-   .card-header Bộ lọc và tìm kiếm
+//-     .card-body
+//-       .row
+//-         .col-6
+//-           +fillterStatus(fillterStatus)
+//-         .col-6
+//-           +search(keyword)
+
+//-   .card.mb-3
+//-     .card-header Sắp xếp
+//-     .card-body
+//-       .row
+//-         .col-4
+//-           +sort()
+
+//-   .card.mb-3
+//-     .card-header Danh sách
+//-     .card-body
+//-       .row
+//-         .col-8
+//-           +form-change-multi(`${prefixAdmin}/products/change-multi?_method=PATCH`)
+//-         .col-4
+//-           a(
+//-             href=`${prefixAdmin}/products/create`
+//-             class="btn btn-outline-success"
+//-           ) + Thêm mới
+
+//-       table(class="table table-hover table-sm" checkbox-multi)
+//-         thead
+//-           tr
+//-             th
+//-               input(type="checkbox" id="checkall")
+//-             th STT
+//-             th Title
+//-             th Ảnh
+//-             th Level
+//-             th Position
+//-             th Status
+//-             th Action
+//-         tbody
+//-           each item, index in products
+//-             tr
+//-               td
+//-                 input(type="checkbox" name="ids" value=item._id class="row-checkbox")
+//-               td #{pagination.limitPages*(pagination.currentPage-1)+(index+1)}
+//-               td
+//-                 a(href=`${prefixAdmin}/products/detail/${item._id}`) #{item.title}
+//-               td
+//-                 .inner-image
+//-                   if item.thumbnail
+//-                     img(src=item.thumbnail alt=item.title style="width:100px; height:auto; border-radius:4px")
+//-                   else
+//-                     img(src="/images/default-thumb.png" alt="no-thumb" style="width:100px; height:auto; opacity:0.6; border-radius:4px")
+//-               td #{item.level || '-'}
+//-               td
+//-                 input.form-control.form-control-sm.position-input(
+//-                   type="number"
+//-                   style="width:80px"
+//-                   min=0
+//-                   value=item.position
+//-                   data-id=item._id
+//-                 )
+//-               td
+//-                 if item.status == "active"
+//-                   a(
+//-                     data-status=item.status
+//-                     data-id=item._id
+//-                     button-change-status
+//-                     href="javascript:;"
+//-                     class="badge badge-success"
+//-                   ) Hoạt động
+//-                 else
+//-                   a(
+//-                     data-status=item.status
+//-                     data-id=item._id
+//-                     button-change-status
+//-                     href="javascript:;"
+//-                     class="badge badge-danger"
+//-                   ) Không hoạt động
+//-               td
+//-                 a.btn.btn-secondary.btn-sm(href=`${prefixAdmin}/products/detail/${item._id}`) Xem
+//-                 a.btn.btn-warning.btn-sm.ml-1(href=`${prefixAdmin}/products/edit/${item._id}`) Sửa
+//-                 button.btn.btn-danger.btn-sm.ml-1.button-delete(data-id=item._id) Xóa
+
+//-   +pagination(pagination)
+
+//-   form(action="" data-path=`${prefixAdmin}/products/change-status` id="form-change-status" method="POST")
+//-   form(action="" data-path=`${prefixAdmin}/products/delete-product` id="form-delete-product" method="POST")
+
+//-   script.
+//-     (function(){
+//-       // prefixAdmin: prefer window var if set, else use injected prefix
+//-       const prefixAdmin = (typeof window !== 'undefined' && window.prefixAdmin) ? window.prefixAdmin : '!{prefixAdmin}';
+
+//-       // check all
+//-       const checkAll = document.getElementById('checkall');
+//-       checkAll && checkAll.addEventListener('change', e => {
+//-         document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = e.target.checked);
+//-       });
+
+//-       // inline position update (debounced)
+//-       document.querySelectorAll('.position-input').forEach(input => {
+//-         let timer;
+//-         input.addEventListener('input', () => {
+//-           clearTimeout(timer);
+//-           timer = setTimeout(async () => {
+//-             const id = input.dataset.id;
+//-             const position = Number(input.value) || 0;
+//-             try {
+//-               const res = await fetch(`${prefixAdmin}/products/update-position/${id}`, {
+//-                 method: 'PATCH',
+//-                 headers: { 'Content-Type': 'application/json' },
+//-                 body: JSON.stringify({ position })
+//-               });
+//-               if (!res.ok) console.error('Update position failed');
+//-             } catch (err) { console.error(err); }
+//-           }, 600);
+//-         });
+//-       });
+
+//-       // toggle status
+//-       document.querySelectorAll('[button-change-status]').forEach(btn => {
+//-         btn.addEventListener('click', async () => {
+//-           const id = btn.dataset.id;
+//-           const current = btn.dataset.status;
+//-           const next = current === 'active' ? 'inactive' : 'active';
+//-           if (!confirm('Xác nhận thay đổi trạng thái?')) return;
+//-           try {
+//-             const res = await fetch(`${prefixAdmin}/products/change-status/${id}`, {
+//-               method: 'PATCH',
+//-               headers: { 'Content-Type': 'application/json' },
+//-               body: JSON.stringify({ status: next })
+//-             });
+//-             if (res.ok) location.reload();
+//-             else alert('Thay đổi thất bại');
+//-           } catch (e) { console.error(e); alert('Lỗi mạng'); }
+//-         });
+//-       });
+
+//-       // delete
+//-       document.querySelectorAll('.button-delete').forEach(btn => {
+//-         btn.addEventListener('click', async () => {
+//-           const id = btn.dataset.id;
+//-           if (!confirm('Xác nhận xóa mục này?')) return;
+//-           try {
+//-             const res = await fetch(`${prefixAdmin}/products/delete/${id}`, { method: 'DELETE' });
+//-             if (res.ok) location.reload();
+//-             else alert('Xóa thất bại');
+//-           } catch (e) { console.error(e); alert('Lỗi mạng'); }
+//-         });
+//-       });
+//-     })();
+
+extends ../../layouts/default.pug
 include ../../mixins/fillter-status.pug
 include ../../mixins/search.pug
-include ../../mixins/pagination.pug 
-include ../../mixins/form-change-multi.pug 
-include ../../mixins/alert.pug 
-include ../../mixins/sort.pug 
+include ../../mixins/pagination.pug
+include ../../mixins/form-change-multi.pug
+include ../../mixins/alert.pug
+include ../../mixins/sort.pug
 
+block main
+  +alert-success(5000)
+  +alert-error(5000)
+  h1 Trang danh sách sản phẩm
 
-block main 
-  +alert-success(5000) 
-  +alert-error(5000) 
-  h1 Trang danh sach san pham ne
- 
-  .card-header Bo loc va tim kiem 
-    .card-body 
-      .row 
-        .col-6 
+  .card-header Bộ lọc và tìm kiếm
+    .card-body
+      .row
+        .col-6
           +fillterStatus(fillterStatus)
-        .col-6 
+        .col-6
           +search(keyword)
 
-  .card.mb-3 
-    .card-header Sắp xếp 
-    .card-body 
-      .row 
-        .col-4 
+  .card.mb-3
+    .card-header Sắp xếp
+    .card-body
+      .row
+        .col-4
           +sort()
 
-  .card.mb-3 
-    .card-header Danh sach
-    .card-body 
+  .card.mb-3
+    .card-header Danh sách
+    .card-body
       .row
         .col-8
           +form-change-multi(`${prefixAdmin}/products/change-multi?_method=PATCH`)
-        .col-4 
-          a(
-            href=`${prefixAdmin}/products/create`
-            class="btn btn-outline-success"
-          ) + Thêm mới 
-          
-      table(
-        class="table table-hover table-sm "
-        checkbox-multi
-      )
-        thead 
-          tr 
-            th 
-              input(type="checkbox" name="checkall")
-            th STT 
-            th Image 
-            th Title 
-            th Price 
-             th Position
-            th Status 
-            th Action 
+        .col-4
+          a.btn.btn-outline-success(href=`${prefixAdmin}/products/create`) + Thêm mới
 
-        tbody 
+      table.table.table-hover.table-sm(checkbox-multi)
+        thead
+          tr
+            th
+              input(type="checkbox" id="checkall")
+            th STT
+            th Title
+            th Ảnh
+            th Level
+            th Position
+            th Status
+            th Action
+        tbody
           each item, index in products
-            tr 
-              td 
-                input(type="checkbox" name="id" value=item.id)
+            tr
+              td
+                input.row-checkbox(type="checkbox" name="ids" value=item._id)
               td #{pagination.limitPages*(pagination.currentPage-1)+(index+1)}
-              td 
-                .inner-image 
-                  img(
-                    src=item.thumbnail
-                    alt=item.title
-                    style="width: 100px; height:auto"
-                  )
-              td #{item.title}
-              td #{item.price}$
-              td 
-                input(
-                  type="number",
-                  style="width:60px",
-                  min=1,
-                  value=item.position,
-                  name='position'
-
+              td
+                a(href=`${prefixAdmin}/products/detail/${item._id}`) #{item.title}
+              td
+                .inner-image
+                  if item.thumbnail
+                    img(src=item.thumbnail alt=item.title style="width:100px; height:auto; border-radius:4px")
+                  else
+                    img(src="/images/default-thumb.png" alt="no-thumb" style="width:100px; height:auto; opacity:0.6; border-radius:4px")
+              td #{item.level || '-'}
+              td
+                input.position-input.form-control.form-control-sm(
+                  type="number"
+                  style="width:80px"
+                  min=0
+                  value=item.position
+                  data-id=item._id
                 )
-              td 
+              td
                 if item.status == "active"
-                  a(
-                    data-status=item.status
-                    data-id=item._id
-                    button-change-status
-                    href=`javascript:;`
-                    class="badge badge-success") Hoat dong 
-                else 
-                  a(
-                    data-status=item.status
-                    data-id=item._id
-                    button-change-status
-                    href=`javascript:;`
-                    class="badge badge-danger") Khong Hoat dong 
-              td 
-                a(
-                    class="btn btn-secondary btn-sm"
-                    href=`${prefixAdmin}/products/detail/${item.id}`
-                    ) Chi tiết 
-                a(
-                  class="btn btn-warning btn-sm ml-1"
-                  href=`${prefixAdmin}/products/edit/${item.id}`
-                  ) Sửa
-                button(
-                  class="btn btn-danger btn-sm ml-1"
-                  button-delete 
-                  data-id=item.id
-                  ) Xóa
+                  a.badge.badge-success(href="javascript:;" button-change-status data-id=item._id data-status=item.status) Hoạt động
+                else
+                  a.badge.badge-danger(href="javascript:;" button-change-status data-id=item._id data-status=item.status) Không hoạt động
+              td
+                a.btn.btn-secondary.btn-sm(href=`${prefixAdmin}/products/detail/${item._id}`) Xem
+                a.btn.btn-warning.btn-sm.ml-1(href=`${prefixAdmin}/products/edit/${item._id}`) Sửa
+                button.btn.btn-danger.btn-sm.ml-1.button-delete(type="button" data-id=item._id) Xóa
 
   +pagination(pagination)
-  form(
-    action=""
-    data-path=`${prefixAdmin}/products/change-status`
-    id="form-change-status"
-    method="POST") 
 
-  form(
-    action=""
-    data-path=`${prefixAdmin}/products/delete-product`
-    id="form-delete-product"
-    method="POST") 
+  // hidden forms kept for compatibility with server-side multi actions
+  form(action="" data-path=`${prefixAdmin}/products/change-status` id="form-change-status" method="POST")
+  form(action="" data-path=`${prefixAdmin}/products/delete-product` id="form-delete-product" method="POST")
 
+  script.
+    (function(){
+      const prefixAdmin = (typeof window !== 'undefined' && window.prefixAdmin) ? window.prefixAdmin : '!{prefixAdmin}';
 
+      // check all
+      const checkAll = document.getElementById('checkall');
+      checkAll && checkAll.addEventListener('change', e => {
+        document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = e.target.checked);
+      });
 
-  <script src="/admin/js/product.js"></script>
+      // inline position update (debounced)
+      document.querySelectorAll('.position-input').forEach(input => {
+        let timer;
+        input.addEventListener('input', () => {
+          clearTimeout(timer);
+          timer = setTimeout(async () => {
+            const id = input.dataset.id;
+            const position = Number(input.value) || 0;
+            try {
+              const res = await fetch(`${prefixAdmin}/products/update-position/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ position })
+              });
+              if (!res.ok) console.error('Update position failed');
+            } catch (err) { console.error(err); }
+          }, 600);
+        });
+      });
+
+      // toggle status
+      document.querySelectorAll('[button-change-status]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const current = btn.dataset.status;
+          const next = current === 'active' ? 'inactive' : 'active';
+          if (!confirm('Xác nhận thay đổi trạng thái?')) return;
+          try {
+            const res = await fetch(`${prefixAdmin}/products/change-status/${id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: next })
+            });
+            if (res.ok) location.reload();
+            else alert('Thay đổi thất bại');
+          } catch (e) { console.error(e); alert('Lỗi mạng'); }
+        });
+      });
+
+      // delete
+      document.querySelectorAll('.button-delete').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          if (!confirm('Xác nhận xóa mục này?')) return;
+          try {
+            const res = await fetch(`${prefixAdmin}/products/delete/${id}`, { method: 'DELETE' });
+            if (res.ok) location.reload();
+            else alert('Xóa thất bại');
+          } catch (e) { console.error(e); alert('Lỗi mạng'); }
+        });
+      });
+    })();
