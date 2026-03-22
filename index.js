@@ -181,9 +181,13 @@ async function connectDB() {
       serverSelectionTimeoutMS: 8000,
       socketTimeoutMS:          20000,
       connectTimeoutMS:         8000,
-      maxPoolSize:              5,
-      minPoolSize:              1,
+      // ✅ Giảm pool size — Atlas M0 free giới hạn connections
+      // Nhiều Vercel instances x pool = quá tải Atlas
+      maxPoolSize:              2,
+      minPoolSize:              0,   // không giữ connection khi idle
       family:                   4,
+      // ✅ Không buffer query khi chưa connect — fail nhanh thay vì treo
+      bufferCommands:           false,
     }).then(m => {
       console.log('MongoDB connected');
       return m;
@@ -215,7 +219,12 @@ app.set('view engine', 'pug');
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
 
 // ✅ DB middleware PHẢI đứng TRƯỚC routes
+// Bỏ qua static files — không cần DB cho ảnh/css/js
 app.use(async (req, res, next) => {
+  // Bỏ qua các request static (ảnh, css, js, fonts...)
+  if (req.path.match(/\.(ico|png|jpg|jpeg|gif|webp|avif|svg|css|js|woff|woff2|ttf|eot|map)$/i)) {
+    return next();
+  }
   try {
     await connectDB();
     next();
