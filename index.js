@@ -166,6 +166,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ── View engine ──
 app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.set('view engine', 'pug');
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
 
