@@ -157,7 +157,8 @@ const routerClient = require('./routers/client/route_index');
 const port = process.env.PORT || 3000;
 
 // ────────────────────────────────────────
-// MongoDB — dùng global cache (chuẩn Vercel)
+// MongoDB — connect NGAY khi module load
+// KHÔNG connect trong request handler
 // ────────────────────────────────────────
 const MONGO_URI =
   process.env.MONGODB_URI  ||
@@ -165,51 +166,44 @@ const MONGO_URI =
   process.env.DATABASE_URL ||
   'mongodb://localhost:27017/yourdb';
 
-// Cache connection ở global scope — sống qua nhiều invocation
-let cached = global._mongoConn;
-if (!cached) cached = global._mongoConn = { conn: null, promise: null };
+// Dùng mongoose built-in buffering — query tự chờ khi chưa connect
+// KHÔNG cần middleware check readyState
+mongoose.set('bufferCommands', true); // mặc định là true, giữ nguyên
 
-async function connectDB() {
-  // Đã có connection sẵn → dùng luôn, không tạo mới
-  if (cached.conn && mongoose.connection.readyState === 1) {
-    return cached.conn;
-  }
+// Connect ngay lập tức khi file này được load
+// Vercel giữ module trong memory → chỉ connect 1 lần per instance
+const dbPromise = mongoose.connect(MONGO_URI, {
+  serverSelectionTimeoutMS: 10000,
+  socketTimeoutMS:          30000,
+  connectTimeoutMS:         10000,
+  maxPoolSize:              3,    // Atlas M0: giới hạn thấp tránh quá tải
+  minPoolSize:              0,
+  family:                   4,
+}).then(() => {
+  console.log('MongoDB connected');
+}).catch(err => {
+  console.error('MongoDB initial connect error:', err.message);
+  // Không crash — mongoose sẽ retry tự động
+});
 
-  // Đang kết nối → chờ promise cũ
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGO_URI, {
-      serverSelectionTimeoutMS: 8000,
-      socketTimeoutMS:          20000,
-      connectTimeoutMS:         8000,
-      // ✅ Giảm pool size — Atlas M0 free giới hạn connections
-      // Nhiều Vercel instances x pool = quá tải Atlas
-      maxPoolSize:              2,
-      minPoolSize:              0,   // không giữ connection khi idle
-      family:                   4,
-      // ✅ Không buffer query khi chưa connect — fail nhanh thay vì treo
-      bufferCommands:           false,
-    }).then(m => {
-      console.log('MongoDB connected');
-      return m;
-    }).catch(err => {
-      cached.promise = null; // reset để lần sau thử lại
-      throw err;
-    });
-  }
-
-  cached.conn = await cached.promise;
-  return cached.conn;
-}
+mongoose.connection.on('disconnected', () => console.warn('MongoDB disconnected'));
+mongoose.connection.on('reconnected',  () => console.log('MongoDB reconnected'));
+mongoose.connection.on('error', err   => console.error('MongoDB error:', err.message));
 
 // ────────────────────────────────────────
-// Middleware — THỨ TỰ QUAN TRỌNG
+// Middleware
 // ────────────────────────────────────────
 app.use(cookieParser('12345'));
-app.use(expressSession({ cookie: { maxAge: 60000 } }));
+app.use(expressSession({
+  secret: process.env.SESSION_SECRET || '12345',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 60000 }
+}));
 app.use(flash());
 app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '50mb' }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -218,41 +212,23 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
 
-// ✅ DB middleware PHẢI đứng TRƯỚC routes
-// Bỏ qua static files — không cần DB cho ảnh/css/js
-app.use(async (req, res, next) => {
-  // Bỏ qua các request static (ảnh, css, js, fonts...)
-  if (req.path.match(/\.(ico|png|jpg|jpeg|gif|webp|avif|svg|css|js|woff|woff2|ttf|eot|map)$/i)) {
-    return next();
-  }
-  try {
-    await connectDB();
-    next();
-  } catch (err) {
-    console.error('DB connect failed:', err.message);
-    res.status(503).send('Không thể kết nối database. Vui lòng thử lại.');
-  }
-});
-
-// ✅ Routes đăng ký SAU DB middleware
+// ────────────────────────────────────────
+// Routes
+// ────────────────────────────────────────
 routerClient(app);
 routerAdmin(app);
 
 // ────────────────────────────────────────
-// Local: start server bình thường
-// Production (Vercel): chỉ export app
+// Local dev
 // ────────────────────────────────────────
 if (process.env.NODE_ENV !== 'production') {
-  connectDB()
-    .then(() => {
-      app.listen(port, () => {
-        console.log(`Server on http://localhost:${port}`);
-      });
-    })
-    .catch(err => {
-      console.error('Startup failed:', err.message);
-      process.exit(1);
-    });
+  dbPromise.then(() => {
+    app.listen(port, () => console.log(`Server on http://localhost:${port}`));
+  }).catch(err => {
+    console.error('Startup failed:', err.message);
+    process.exit(1);
+  });
 }
 
+// Export cho Vercel
 module.exports = app;
